@@ -5,17 +5,19 @@
  * Author : a.tarletskiy
  */ 
 
-#include <avr/io.h>
-#include "inc/TWI.h"
+
+#include "GPIO.h"
+#include "portability.h"
 
 int main(void)
 {
-	TWI twi();
-	PCF8574 dev(twi);
+	GPIO * pio = &GPIO::Instance();
+    
+	pio->pinMode(2, pio->OUTPUT);
     /* Replace with your application code */
     while (1) 
     {
-		dev.acquire();
+		
     }
 }
 

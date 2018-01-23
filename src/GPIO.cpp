@@ -6,6 +6,7 @@
 */
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include "GPIO.h"
 
 
@@ -19,19 +20,121 @@ GPIO::~GPIO()
 {
 } //~GPIO
 
-static GPIO & GPIO::Instance(void)
+GPIO & GPIO::Instance(void)
 {
 	static GPIO s;
 	return s;
 }
 
-void pinMode(uint8_t pin, uint8_t mode)
+void GPIO::pinMode(uint8_t pin, uint8_t mode)
 {
+	volatile uint8_t * reg;
+	uint8_t bit;
+	uint8_t oldSreg;
+
+	bit = pinToBit(pin);
+
+	switch(pinToPort(pin))
+	{
+		case PORT_B:
+			reg = &DDRB;
+		break;
+		case PORT_C:
+			reg = &DDRC;
+		break;
+		case PORT_D:
+			reg = &DDRD;
+		break;
+		default:
+		return;
+	}
 	
-	
+	if(mode == INPUT)
+	{
+		oldSreg = SREG;
+		cli();
+		*reg &= ~bit;
+		SREG = oldSreg;
+	}
+	else
+	{
+		oldSreg = SREG;
+		cli();
+		*reg |= bit;
+		SREG = oldSreg;
+	}
 }
-void writePin(uint8_t pin, uint8_t data);
-uint8_t readPin(uint8_t pin);
+
+void GPIO::writePin(uint8_t pin, uint8_t data)
+{
+	volatile uint8_t * reg;
+	uint8_t bit;
+	uint8_t oldSreg;
+
+	bit = pinToBit(pin);
+
+	switch(pinToPort(pin))
+	{
+		case PORT_B:
+			reg = &PORTB;
+		break;
+		case PORT_C:
+			reg = &PORTC;
+		break;
+		case PORT_D:
+			reg = &PORTD;
+		break;
+		default:
+		return;
+	}
+	
+	if(data == LOW)
+	{
+		oldSreg = SREG;
+		cli();
+		*reg &= ~bit;
+		SREG = oldSreg;
+	}
+	else
+	{
+		oldSreg = SREG;
+		cli();
+		*reg |= bit;
+		SREG = oldSreg;
+	}	
+}
+
+uint8_t GPIO::readPin(uint8_t pin)
+{
+	volatile uint8_t * reg;
+	uint8_t bit;
+	uint8_t oldSreg;
+	volatile uint8_t res;
+
+	bit = pinToBit(pin);
+
+	switch(pinToPort(pin))
+	{
+		case PORT_B:
+			reg = &PINB;
+		break;
+		case PORT_C:
+			reg = &PINC;
+		break;
+		case PORT_D:
+			reg = &PIND;
+		break;
+		default:
+		return 0;
+	}
+		
+	oldSreg = SREG;
+	cli();
+	res = *reg & bit;
+	SREG = oldSreg;
+
+	return res;	
+}
 
 uint8_t GPIO::pinToPort(uint8_t pin)
 {
@@ -44,7 +147,7 @@ uint8_t GPIO::pinToPort(uint8_t pin)
 		case 26:
 		case 27:
 		case 28:
-			return PORT_C;			
+			return (int)PORT_C;			
 		case 2:
 		case 3:
 		case 4:
@@ -53,7 +156,7 @@ uint8_t GPIO::pinToPort(uint8_t pin)
 		case 11:
 		case 12:
 		case 13:
-			return PORT_D;
+			return (int)PORT_D;
 		case 9:
 		case 10:
 		case 14:
@@ -62,7 +165,7 @@ uint8_t GPIO::pinToPort(uint8_t pin)
 		case 17:
 		case 18:
 		case 19:
-			return PORT_B;			
+			return (int)PORT_B;			
 	}
 	return 0;
 }
@@ -99,7 +202,7 @@ uint8_t GPIO::pinToBit(uint8_t pin)
 		case 9:
 		case 1:
 			return 0x40;
-		case 12:
+		case 13:
 		case 10:		
 			return 0x80;
 	}

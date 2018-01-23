@@ -9,13 +9,11 @@
 #ifndef __GPIO_H__
 #define __GPIO_H__
 
+#include <inttypes.h>
 
 class GPIO
 {
 //variables
-public:
-protected:
-private:
 
 //functions
 public:
@@ -28,24 +26,24 @@ public:
 		INPUT,
 		OUTPUT,
 		HIGH,
-		LOW
-	} __attribute__((packed));
+		LOW = 0
+	};
 protected:
 private:
 	GPIO();
 	~GPIO();
 	GPIO( const GPIO &c );
 	GPIO& operator=( const GPIO &c );
-	uint8_t * pinToPort(uint8_t pin);
+	uint8_t pinToPort(uint8_t pin);
 	uint8_t pinToBit(uint8_t pin);
 	enum
 	{
 		PORT_B = 1,
-		PORT_C,
-		PORT_D,
+		PORT_C = 2,
+		PORT_D = 3,
 		DDR,
 		PIN
-	} __attribute__((packed));
+	};
 }; //GPIO
 
 #endif //__GPIO_H__
