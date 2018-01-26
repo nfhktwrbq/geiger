@@ -40,6 +40,7 @@ SUBDIRS :=  \
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
 ../main.cpp \
+../src/AnalogToDigital.cpp \
 ../src/GPIO.cpp \
 ../src/HD44780.cpp
 
@@ -52,21 +53,25 @@ ASM_SRCS +=
 
 OBJS +=  \
 main.o \
+src/AnalogToDigital.o \
 src/GPIO.o \
 src/HD44780.o
 
 OBJS_AS_ARGS +=  \
 main.o \
+src/AnalogToDigital.o \
 src/GPIO.o \
 src/HD44780.o
 
 C_DEPS +=  \
 main.d \
+src/AnalogToDigital.d \
 src/GPIO.d \
 src/HD44780.d
 
 C_DEPS_AS_ARGS +=  \
 main.d \
+src/AnalogToDigital.d \
 src/GPIO.d \
 src/HD44780.d
 
@@ -84,6 +89,8 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
+
+
 
 
 
