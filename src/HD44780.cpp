@@ -82,7 +82,7 @@ void HD44780::print(char ch)
 
 void HD44780::print(char * str)
 {
-	while(str)
+	while(* str)
 	{
 		print(* str);
 		str++;		
