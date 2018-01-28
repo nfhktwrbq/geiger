@@ -23,10 +23,10 @@ public:
 	uint8_t readPin(uint8_t pin);
 	enum
 	{
+		LOW = 0,
 		INPUT,
 		OUTPUT,
-		HIGH,
-		LOW = 0
+		HIGH,		
 	};
 protected:
 private:
@@ -42,7 +42,7 @@ private:
 		PORT_C = 2,
 		PORT_D = 3,
 		DDR,
-		PIN
+		PIN,
 	};
 }; //GPIO
 

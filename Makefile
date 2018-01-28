@@ -7,7 +7,7 @@ OBJCOPY = avr-objcopy
 SRCSDIR = src
  
 # Задаем из каких файлов собирать проект, можно указать несколько файлов
-SRCS = $(SRCSDIR)/GPIO.cpp main.cpp
+SRCS = $(SRCSDIR)/GPIO.cpp $(SRCSDIR)/HD44780.cpp $(SRCSDIR)/AnalogToDigital.cpp $(SRCSDIR)/Timer16.cpp $(SRCSDIR)/Timer8_0.cpp $(SRCSDIR)/Timer8_2.cpp main.cpp
 
  
 OBJS = $(SRCS:.c=.o)
@@ -16,8 +16,8 @@ OBJS = $(SRCS:.c=.o)
 MCU=atmega328p
  
 # Флаги компилятора, при помощи F_CPU определяем частоту на которой будет работать контроллер,
-CFLAGS = -mmcu=$(MCU) -Wall  -Os -Werror -lm  -mcall-prologues -DF_CPU=8000000 -I./inc -std=c++11 -fno-threadsafe-statics
-LDFLAGS = -mmcu=$(MCU)  -Wall  -Os  -Werror -I./inc -std=c++11 -fno-threadsafe-statics
+CFLAGS = -mmcu=$(MCU) -Wall  -Os -Werror -lm  -mcall-prologues -DF_CPU=16000000UL -I./inc -std=c++11 -fno-threadsafe-statics
+LDFLAGS = -mmcu=$(MCU)  -Wall  -Os  -Werror -DF_CPU=16000000UL -I./inc -std=c++11 -fno-threadsafe-statics
 
 PRINTF_LIB_FLOAT = -Wl,-u,vfprintf -lprintf_flt
  

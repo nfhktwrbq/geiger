@@ -27,7 +27,7 @@ HD44780::~HD44780()
 
 void HD44780::init(void)
 {
-	_delay_ms(25);
+	_delay_ms(125);
 
 	pio->pinMode(pinD4, pio->OUTPUT);
 	pio->pinMode(pinD5, pio->OUTPUT);
@@ -36,16 +36,24 @@ void HD44780::init(void)
 	pio->pinMode(pinRS, pio->OUTPUT);
 	pio->pinMode(pinE, pio->OUTPUT);
 	
+
+
 	setData(0x00);
 	pio->writePin(pinRS, pio->LOW);
 	pio->writePin(pinE, pio->LOW);
+
+	_delay_ms(25);
+
 	setData(0x03);
 	strobe();	
-	setData(0x03);
+	_delay_ms(10);
+
 	strobe();
 	_delay_us(45);
+
 	strobe();
 	_delay_us(45);	
+	
 	setData(0x02);
 	strobe();
 	_delay_us(45);
@@ -59,28 +67,59 @@ void HD44780::init(void)
 
 void HD44780::sendCmd(uint8_t cmd)
 {
-	_delay_us(400);
+	_delay_us(40);
 	pio->writePin(pinRS, pio->LOW);
 	pio->writePin(pinE, pio->LOW);
-	setData(0x0f & (cmd >> 4));
-	strobe();
-	setData(0x0f & cmd);
-	strobe();
+	setData(0x00);
+	_delay_us(1);
+	pio->writePin(pinE, pio->HIGH);
+	_delay_us(1);
+	setData(cmd >> 4);
+	_delay_us(1);
+	pio->writePin(pinE, pio->LOW);
+	_delay_us(1);
+	setData(0x00);
+
+	_delay_us(1);
+	pio->writePin(pinE, pio->HIGH);
+	_delay_us(1);
+	setData(cmd);
+	_delay_us(1);
+	pio->writePin(pinE, pio->LOW);
+	_delay_us(1);
+	setData(0x00);
 }
 
 void HD44780::print(char ch)
 {
-	_delay_us(400);
+	_delay_us(40);
 	pio->writePin(pinRS, pio->LOW);
-	pio->writePin(pinE, pio->LOW);		
-	setData(0x0f & (ch >> 4));
+	pio->writePin(pinE, pio->LOW);
+	setData(0x00);
 	pio->writePin(pinRS, pio->HIGH);
-	strobe();
-	setData(0x0f & ch);	
-	strobe();	
+	_delay_us(1);
+	pio->writePin(pinE, pio->HIGH);
+	_delay_us(1);
+	setData(ch >> 4);
+	_delay_us(1);
+	pio->writePin(pinE, pio->LOW);
+	_delay_us(1);
+	setData(0x00);
+	pio->writePin(pinRS, pio->LOW);
+
+	pio->writePin(pinRS, pio->HIGH);
+	_delay_us(1);
+	pio->writePin(pinE, pio->HIGH);
+	_delay_us(1);
+	setData(ch);
+	_delay_us(1);
+	pio->writePin(pinE, pio->LOW);
+	_delay_us(1);
+	setData(0x00);	
+	pio->writePin(pinRS, pio->LOW);
 }
 
-void HD44780::print(char * str)
+void HD44780::print(const char * str)
 {
 	while(* str)
 	{
@@ -118,7 +157,13 @@ void HD44780::setXY(uint8_t x, uint8_t y)
 void HD44780::clear()
 {
 	sendCmd(0x01);
-	_delay_ms(500);	
+	_delay_ms(2);	
+}
+
+void HD44780::home()
+{
+	sendCmd(0x02);
+	_delay_us(50);	
 }
 
 void HD44780::setData(uint8_t data)
@@ -133,8 +178,9 @@ void HD44780::setData(uint8_t data)
 
 void HD44780::strobe(void)
 {
-	pio->writePin(pinE, pio->HIGH);
-	_delay_us(400);
 	pio->writePin(pinE, pio->LOW);
-	_delay_us(400);
+	pio->writePin(pinE, pio->HIGH);
+	_delay_us(40);
+	pio->writePin(pinE, pio->LOW);
+	_delay_us(40);
 }

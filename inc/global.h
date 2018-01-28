@@ -10,11 +10,6 @@
 #define GLOBAL_H_
 
 
-struct pin
-{
-	uint8_t & port;
-	uint8_t 	
-};
-
+extern uint32_t count;
 
 #endif /* GLOBAL_H_ */

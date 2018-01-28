@@ -16,24 +16,6 @@ class HD44780
 {
 //variables
 public:
-	
-
-/*void lcd_WrCmd();
-void lcd_WrChr(uint8_t Data);
-void lcd_setXY(bool Row, char Col);
-void lcd_WrInt(uint16_t num, char q, uint8_t fill);
-uint8_t lcd_readChr(void);
-void lcd_WrTemp(uint16_t tp);
-void lcd_WrLong(uint32_t num, bool q);
-void lcd_clear(void);
-bool lcd_busy(void);
-void lcd_WrStr(const char *data, uint8_t len = MAX_LEN);
-void lcd_message(uint8_t position1, const char * firsrStringMesage, uint8_t position2, const char * secondStringMessage);
-void lcd_message(uint8_t stringNumber, uint8_t position1, const char * stringMesage);
-void lcd_iMessage(uint8_t stringNumber, uint8_t position1, uint32_t data);
-void lcd_off(void);*/
-
-
 protected:
 private:
 	GPIO * pio;
@@ -55,11 +37,12 @@ public:
 	void sendCmd(uint8_t cmd);
 	void init(void);
 	void print(char ch);
-	void print(char * str);
+	void print(const char * str);
 	void printf(const char * format, ...);
 	void setXY(uint8_t x, uint8_t y);
 	void clear();
-	
+	void home();
+
 protected:
 private:
 	HD44780( const HD44780 &c );
