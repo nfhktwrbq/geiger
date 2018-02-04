@@ -18,7 +18,7 @@ AnalogToDigital::~AnalogToDigital()
 {
 } //~AnalogToDigital
 
-AnalogToDigital::AnalogToDigital(uint8_t ref, uint8_t adj, uint8_t prescaler)
+AnalogToDigital::AnalogToDigital(REFERENCE ref, uint8_t adj, PRESCALER prescaler)
 {	
 	ADMUX = 0;
 	ADMUX |= (0xe0 & ref) | (0x10 & adj);
@@ -38,7 +38,7 @@ uint16_t AnalogToDigital::proc(void)
 	return ADC;
 }
 
-void AnalogToDigital::setChannel(uint8_t ch)
+void AnalogToDigital::setChannel(CHANNEL ch)
 {
 	ADMUX &= 0xf0;
 	ADMUX |= (0x0f & ch);
@@ -61,7 +61,7 @@ void AnalogToDigital::adcEnable(bool en)
 	}
 }
 
-void AnalogToDigital::setPrescale(uint8_t pr)
+void AnalogToDigital::setPrescale(PRESCALER pr)
 {
 	ADCSRA &= 0x7c;
 	ADCSRA |= 0x80 | (0x03 & pr);

@@ -15,6 +15,7 @@
 #include "AnalogToDigital.h"
 #include "gvars.h"
 #include "global.h"
+#include "PulseWidthModulation8.h"
 
 #include "interrupt.h"
 #include "util/delay.h"
@@ -43,6 +44,12 @@ int main(void)
 	t16.enableInterrupt(false);
 	//t16.setInterruptFlag(uint8_t flag);
 	//t16.getInterruptFlag(void);
+
+	Timer8_0 t8_0;
+	t8_0.setCompareOutputMode(Timer8_0::CO_FAST_PWM_OC0A);
+	t8_0.setWaveformGenerationMode(Timer8_0::WG_FAST_PWM_9BIT);
+	t8_0.setClockSelection(Timer8_0::CS_1PR);
+	PulseWidthModulation8 pwm8(&t8_0);
 
 	pio->pinMode(6, pio->INPUT);
 	pio->pinMode(15, pio->OUTPUT);

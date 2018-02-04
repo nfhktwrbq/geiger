@@ -12,7 +12,7 @@
 #include <inttypes.h>
 #include "Timer.h"
 
-class Timer16 : public Timer
+class Timer16 : public Timer<uint16_t>
 {
 //variables
 	public:
@@ -28,7 +28,9 @@ class Timer16 : public Timer
 		Timer16(uint8_t mode);
 
 		void setCompareOutputMode(uint8_t mode);
+		uint8_t getCompareOutputMode(void);
 		void setWaveformGenerationMode(uint8_t mode);
+		uint8_t getWaveformGenerationMode(void);
 		void setClockSelection(uint8_t mode);
 		void setInputCaptureNoiseCanceler(uint8_t mode);
 		void setCaptureEdge(uint8_t mode);
@@ -45,7 +47,9 @@ class Timer16 : public Timer
 		void setInterrupt(uint8_t mode);
 		void setInterruptFlag(uint8_t flag);
 		uint8_t getInterruptFlag(void);
-
+	private:
+		Timer16( const Timer16 &c );
+		Timer16& operator=( const Timer16 &c );
 
 }; //Timer
 

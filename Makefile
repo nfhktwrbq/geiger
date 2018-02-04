@@ -7,7 +7,8 @@ OBJCOPY = avr-objcopy
 SRCSDIR = src
  
 # Задаем из каких файлов собирать проект, можно указать несколько файлов
-SRCS = $(SRCSDIR)/GPIO.cpp $(SRCSDIR)/HD44780.cpp $(SRCSDIR)/AnalogToDigital.cpp $(SRCSDIR)/Timer16.cpp $(SRCSDIR)/Timer8_0.cpp $(SRCSDIR)/Timer8_2.cpp main.cpp
+SRCS = $(SRCSDIR)/GPIO.cpp $(SRCSDIR)/HD44780.cpp $(SRCSDIR)/AnalogToDigital.cpp $(SRCSDIR)/Timer16.cpp $(SRCSDIR)/Timer8_0.cpp $(SRCSDIR)/Timer8_2.cpp \
+		$(SRCSDIR)/PulseWidthModulation8.cpp main.cpp
 
  
 OBJS = $(SRCS:.c=.o)

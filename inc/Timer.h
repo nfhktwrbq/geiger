@@ -10,7 +10,7 @@
 #define __TIMER_H__
 
 #include <inttypes.h>
-
+template <typename T>
 class Timer
 {
 //variables
@@ -19,21 +19,25 @@ class Timer
 		
 		virtual void setCompareOutputMode(uint8_t mode) = 0;
 
+		virtual uint8_t getCompareOutputMode(void) = 0;
+
 		virtual void setWaveformGenerationMode(uint8_t mode) = 0;
+
+		virtual uint8_t getWaveformGenerationMode(void) = 0;
 
 		virtual void setClockSelection(uint8_t mode) = 0;
 		
-		virtual uint16_t getTimerCounter(void) = 0;
+		virtual T getTimerCounter(void) = 0;
 
-		virtual void setTimerCounter(uint16_t tc) = 0;
+		virtual void setTimerCounter(T tc) = 0;
 
-		virtual uint16_t getOutputCompareA(void) = 0;
+		virtual T getOutputCompareA(void) = 0;
 
-		virtual void setOutputCompareA(uint16_t oc) = 0;
+		virtual void setOutputCompareA(T oc) = 0;
 
-		virtual uint16_t getOutputCompareB(void) = 0;
+		virtual T getOutputCompareB(void) = 0;
 
-		virtual void setOutputCompareB(uint16_t oc) = 0;
+		virtual void setOutputCompareB(T oc) = 0;
 
 		virtual void enableInterrupt(bool en) = 0;
 

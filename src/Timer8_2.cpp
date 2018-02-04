@@ -36,12 +36,22 @@ void Timer8_2::setCompareOutputMode(uint8_t mode)
 	TCCR2A |= (mode & 0xf0);
 }
 
+uint8_t Timer8_2::getCompareOutputMode(void)
+{
+	return TCCR2A;
+}
+
 void Timer8_2::setWaveformGenerationMode(uint8_t mode)
 {
 	TCCR2A &= 0xfc;
 	TCCR2B &= 0xf7;
 	TCCR2A |= (mode & 0x03);
 	TCCR2B |= (mode & 0x08);	
+}
+
+uint8_t Timer8_2::getWaveformGenerationMode(void)
+{
+	return 0;
 }
 
 void Timer8_2::setClockSelection(uint8_t mode)
@@ -56,34 +66,34 @@ void Timer8_2::setForceCapture(uint8_t mode)
 	TCCR2B |= (mode & 0xc0);	
 }
 
-uint16_t Timer8_2::getTimerCounter(void)
+uint8_t Timer8_2::getTimerCounter(void)
 {
-	return (uint16_t)TCNT2;
+	return TCNT2;
 }
 
-void Timer8_2::setTimerCounter(uint16_t tc)
+void Timer8_2::setTimerCounter(uint8_t tc)
 {
-	TCNT2 = (uint8_t)tc;
+	TCNT2 = tc;
 }
 
-uint16_t Timer8_2::getOutputCompareA(void)
+uint8_t Timer8_2::getOutputCompareA(void)
 {
-	return (uint16_t)OCR2A;
+	return OCR2A;
 }
 
-void Timer8_2::setOutputCompareA(uint16_t oc)
+void Timer8_2::setOutputCompareA(uint8_t oc)
 {
-	OCR2A = (uint8_t)oc;
+	OCR2A = oc;
 }
 
-uint16_t Timer8_2::getOutputCompareB(void)
+uint8_t Timer8_2::getOutputCompareB(void)
 {
-	return (uint16_t)OCR2B;
+	return OCR2B;
 }
 
-void Timer8_2::setOutputCompareB(uint16_t oc)
+void Timer8_2::setOutputCompareB(uint8_t oc)
 {
-	OCR2B = (uint8_t)oc;
+	OCR2B = oc;
 }
 
 void Timer8_2::enableInterrupt(bool en)

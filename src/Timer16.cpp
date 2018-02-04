@@ -36,12 +36,22 @@ void Timer16::setCompareOutputMode(uint8_t mode)
 	TCCR1A |= (mode & 0xf0);
 }
 
+uint8_t Timer16::getCompareOutputMode(void)
+{
+	return TCCR0A;
+}
+
 void Timer16::setWaveformGenerationMode(uint8_t mode)
 {
 	TCCR1A &= 0xfc;
 	TCCR1B &= 0xe7;
 	TCCR1A |= (mode & 0x03);
 	TCCR1B |= (mode & 0x18);	
+}
+
+uint8_t Timer16::getWaveformGenerationMode(void)
+{
+	return 0;
 }
 
 void Timer16::setClockSelection(uint8_t mode)
