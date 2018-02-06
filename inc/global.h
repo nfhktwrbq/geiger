@@ -12,4 +12,41 @@
 
 extern uint32_t count;
 
+enum COMPARE_OUTPUT_8
+{
+	
+	CO_FAST_PWM_OCnA,
+};
+
+enum WAVE_FORM_GENERATION_8
+{
+	WG_FAST_PWM_9BIT
+	
+};
+
+enum CLOCK_SELECTION_8
+{
+	CS_1PR
+	
+};
+
+enum COMPARE_OUTPUT_16
+{
+	
+	
+};
+
+enum WAVE_FORM_GENERATION_16
+{
+	
+	
+};
+
+enum CLOCK_SELECTION_16
+{
+	
+	
+};
+
+
 #endif /* GLOBAL_H_ */
