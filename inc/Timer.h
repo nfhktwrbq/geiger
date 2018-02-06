@@ -10,22 +10,24 @@
 #define __TIMER_H__
 
 #include <inttypes.h>
-template <typename T>
+#include "global.h"
+
+template <typename T, typename CO,  typename WG,  typename CS  >
 class Timer
 {
 //variables
 //functions
 	public:
-		
-		virtual void setCompareOutputMode(uint8_t mode) = 0;
+				
+		virtual void setCompareOutputMode(CO mode) = 0;
 
 		virtual uint8_t getCompareOutputMode(void) = 0;
 
-		virtual void setWaveformGenerationMode(uint8_t mode) = 0;
+		virtual void setWaveformGenerationMode(WG mode) = 0;
 
 		virtual uint8_t getWaveformGenerationMode(void) = 0;
 
-		virtual void setClockSelection(uint8_t mode) = 0;
+		virtual void setClockSelection(CS mode) = 0;
 		
 		virtual T getTimerCounter(void) = 0;
 

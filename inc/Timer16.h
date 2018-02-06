@@ -10,28 +10,25 @@
 #define __TIMER16_H__
 
 #include <inttypes.h>
+#include "global.h"
 #include "Timer.h"
 
-class Timer16 : public Timer<uint16_t>
+class Timer16 : public Timer<uint16_t, COMPARE_OUTPUT_16, WAVE_FORM_GENERATION_16, CLOCK_SELECTION_16>
 {
 //variables
 	public:
-		static const uint8_t CO_FAST_PWM_OC1A = 0x80;
-		static const uint8_t WG_FAST_PWM_10BIT = 0x0b;
-		static const uint8_t WG_FAST_PWM_9BIT = 0x0a;
-		static const uint8_t CS_1024PR = 0x05;
-		static const uint8_t CS_1PR = 0x01;
+	
 //functions
 	public:		
 		Timer16();
 		~Timer16();
 		Timer16(uint8_t mode);
 
-		void setCompareOutputMode(uint8_t mode);
+		void setCompareOutputMode(COMPARE_OUTPUT_16 mode);
 		uint8_t getCompareOutputMode(void);
-		void setWaveformGenerationMode(uint8_t mode);
+		void setWaveformGenerationMode(WAVE_FORM_GENERATION_16 mode);
 		uint8_t getWaveformGenerationMode(void);
-		void setClockSelection(uint8_t mode);
+		void setClockSelection(CLOCK_SELECTION_16 mode);
 		void setInputCaptureNoiseCanceler(uint8_t mode);
 		void setCaptureEdge(uint8_t mode);
 		void setForceCapture(uint8_t mode);

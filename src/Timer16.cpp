@@ -30,7 +30,7 @@ Timer16::Timer16(uint8_t mode)
 	
 } //GPIO
 
-void Timer16::setCompareOutputMode(uint8_t mode)
+void Timer16::setCompareOutputMode(COMPARE_OUTPUT_16 mode)
 {
 	TCCR1A &= 0x0f;
 	TCCR1A |= (mode & 0xf0);
@@ -41,7 +41,7 @@ uint8_t Timer16::getCompareOutputMode(void)
 	return TCCR0A;
 }
 
-void Timer16::setWaveformGenerationMode(uint8_t mode)
+void Timer16::setWaveformGenerationMode(WAVE_FORM_GENERATION_16 mode)
 {
 	TCCR1A &= 0xfc;
 	TCCR1B &= 0xe7;
@@ -54,7 +54,7 @@ uint8_t Timer16::getWaveformGenerationMode(void)
 	return 0;
 }
 
-void Timer16::setClockSelection(uint8_t mode)
+void Timer16::setClockSelection(CLOCK_SELECTION_16 mode)
 {
 	TCCR1B &= 0xf8;
 	TCCR1B |= (mode & 0x07);	

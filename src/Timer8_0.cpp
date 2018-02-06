@@ -30,7 +30,7 @@ Timer8_0::Timer8_0(uint8_t mode)
 	
 } //GPIO
 
-void Timer8_0::setCompareOutputMode(uint8_t mode)
+void Timer8_0::setCompareOutputMode(COMPARE_OUTPUT_8 mode)
 {
 	TCCR0A &= 0x0f;
 	TCCR0A |= (mode & 0xf0);
@@ -42,7 +42,7 @@ uint8_t Timer8_0::getCompareOutputMode(void)
 }
 
 
-void Timer8_0::setWaveformGenerationMode(uint8_t mode)
+void Timer8_0::setWaveformGenerationMode(WAVE_FORM_GENERATION_8 mode)
 {
 	TCCR0A &= 0xfc;
 	TCCR0B &= 0xf7;
@@ -55,7 +55,7 @@ uint8_t Timer8_0::getWaveformGenerationMode(void)
 	return 0;
 }
 
-void Timer8_0::setClockSelection(uint8_t mode)
+void Timer8_0::setClockSelection(CLOCK_SELECTION_8 mode)
 {
 	TCCR0B &= 0xf8;
 	TCCR0B |= (mode & 0x07);	

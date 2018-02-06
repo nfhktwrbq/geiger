@@ -11,16 +11,13 @@
 
 #include <inttypes.h>
 #include "Timer.h"
+#include "global.h"
 
-class Timer8_2 : public Timer<uint8_t>
+class Timer8_2 : public Timer<uint8_t, COMPARE_OUTPUT_8, WAVE_FORM_GENERATION_8, CLOCK_SELECTION_8>
 {
 //variables
 	public:
-		static const uint8_t CO_FAST_PWM_OC2A = 0x80;
-		static const uint8_t WG_FAST_PWM_10BIT = 0x0b;
-		static const uint8_t WG_FAST_PWM_9BIT = 0x0a;
-		static const uint8_t CS_1024PR = 0x05;
-		static const uint8_t CS_1PR = 0x01;
+		
 //functions
 	public:		
 		Timer8_2();

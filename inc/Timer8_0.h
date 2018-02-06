@@ -10,28 +10,25 @@
 #define __TIMER8_0_H__
 
 #include <inttypes.h>
+#include "global.h"
 #include "Timer.h"
 
-class Timer8_0 : public Timer<uint8_t>
+class Timer8_0 : public Timer<uint8_t, COMPARE_OUTPUT_8, WAVE_FORM_GENERATION_8, CLOCK_SELECTION_8>
 {
 //variables
 	public:
-		static const uint8_t CO_FAST_PWM_OC0A = 0x80;
-		static const uint8_t WG_FAST_PWM_10BIT = 0x0b;
-		static const uint8_t WG_FAST_PWM_9BIT = 0x0a;
-		static const uint8_t CS_1024PR = 0x05;
-		static const uint8_t CS_1PR = 0x01;
+		
 //functions
 	public:		
 		Timer8_0();
 		~Timer8_0();
 		Timer8_0(uint8_t mode);
 
-		void setCompareOutputMode(uint8_t mode);
+		void setCompareOutputMode(COMPARE_OUTPUT_8 mode);
 		uint8_t getCompareOutputMode(void);
-		void setWaveformGenerationMode(uint8_t mode);
+		void setWaveformGenerationMode(WAVE_FORM_GENERATION_8 mode);
 		uint8_t getWaveformGenerationMode(void);
-		void setClockSelection(uint8_t mode);
+		void setClockSelection(CLOCK_SELECTION_8 mode);
 		void setCaptureEdge(uint8_t mode);
 		void setForceCapture(uint8_t mode);
 		uint8_t getTimerCounter(void);
