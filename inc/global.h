@@ -12,4 +12,7 @@
 
 extern uint32_t count;
 
+
+
+
 #endif /* GLOBAL_H_ */

@@ -7,9 +7,7 @@
 
 
 #include "GPIO.h"
-#include "Timer16.h"
-#include "Timer8_0.h"
-#include "Timer8_2.h"
+#include "Timer.h"
 #include "HD44780.h"
 #include "portability.h"
 #include "AnalogToDigital.h"
@@ -26,7 +24,7 @@
 int main(void)
 {
 	GPIO * pio = &GPIO::Instance();
-	Timer16 t16;
+
 
 //	t16.setCompareOutputMode(Timer16::CO_FAST_PWM_OCnA);
 //	t16.setWaveformGenerationMode(Timer16::WG_FAST_PWM_9BIT);
@@ -46,11 +44,7 @@ int main(void)
 	//t16.setInterruptFlag(uint8_t flag);
 	//t16.getInterruptFlag(void);
 
-	Timer8_0 t8_0;
 	
-	t8_0.setCompareOutputMode(CO_FAST_PWM_OCnA);
-	t8_0.setWaveformGenerationMode(WG_FAST_PWM_9BIT);
-	t8_0.setClockSelection(CS_1PR);
 	
 	
 
@@ -62,8 +56,14 @@ int main(void)
 	AnalogToDigital adc(AnalogToDigital::AREF,0,AnalogToDigital::PR_128);
     adc.setChannel(AnalogToDigital::CH_3);
 	
-	PulseWidthModulation<Timer8_0, uint8_t, COMPARE_OUTPUT_8, WAVE_FORM_GENERATION_8, CLOCK_SELECTION_8> pwm(&t8_0);
-	//pwm.SetTimer((uint8_t)255);
+	Timer8 timer8_0(&TCCR0A, &TCCR0B, &TCNT0, &OCR0A, &OCR0B, &TIMSK0, &TIFR0, &GTCCR, &GTCCR);
+	Timer8 timer8_2(&TCCR2A, &TCCR2B, &TCNT2, &OCR2A, &OCR2B, &TIMSK2, &TIFR2, &ASSR, &GTCCR);
+	Timer16 timer16_1(&TCCR1A, &TCCR1B, &TCNT1, &OCR1A, &OCR1B, &TIMSK1, &TIFR1, &TCCR1C, &ICR1);
+	
+	PulseWidthModulation8 pwm8(&timer8_0);
+	PulseWidthModulation16 pwmHV(&timer16_1);
+	
+	pwm8.initPWM(CO_FAST_PWM_OCnA, WG_FAST_PWM_9BIT, CS_1PR);
 	
 	lcd.init();
 	lcd.sendCmd(0x02);
@@ -74,7 +74,7 @@ int main(void)
 	lcd.setXY(0,0);
 	lcd.print("        ");
 	lcd.setXY(0,0);
-	lcd.printf("T=%d", t16.getTimerCounter());
+	//lcd.printf("T=%d", t16.getTimerCounter());
     _delay_ms(4000);
     uint16_t i = 0;
     while (1) 
@@ -85,7 +85,7 @@ int main(void)
 
 		if(pio->readPin(6))
 		{
-			t16.setOutputCompareA(i);
+			//t16.setOutputCompareA(i);
 			i++;
 		}
 		_delay_ms(500);

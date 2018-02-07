@@ -42,10 +42,7 @@ C_SRCS +=  \
 ../main.cpp \
 ../src/AnalogToDigital.cpp \
 ../src/GPIO.cpp \
-../src/HD44780.cpp \
-../src/Timer16.cpp \
-../src/Timer8_0.cpp \
-../src/Timer8_2.cpp
+../src/HD44780.cpp
 
 
 PREPROCESSING_SRCS += 
@@ -58,37 +55,25 @@ OBJS +=  \
 main.o \
 src/AnalogToDigital.o \
 src/GPIO.o \
-src/HD44780.o \
-src/Timer16.o \
-src/Timer8_0.o \
-src/Timer8_2.o
+src/HD44780.o
 
 OBJS_AS_ARGS +=  \
 main.o \
 src/AnalogToDigital.o \
 src/GPIO.o \
-src/HD44780.o \
-src/Timer16.o \
-src/Timer8_0.o \
-src/Timer8_2.o
+src/HD44780.o
 
 C_DEPS +=  \
 main.d \
 src/AnalogToDigital.d \
 src/GPIO.d \
-src/HD44780.d \
-src/Timer16.d \
-src/Timer8_0.d \
-src/Timer8_2.d
+src/HD44780.d
 
 C_DEPS_AS_ARGS +=  \
 main.d \
 src/AnalogToDigital.d \
 src/GPIO.d \
-src/HD44780.d \
-src/Timer16.d \
-src/Timer8_0.d \
-src/Timer8_2.d
+src/HD44780.d
 
 OUTPUT_FILE_PATH +=geiger.elf
 
@@ -104,12 +89,6 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
-
-
-
-
-
-
 
 
 

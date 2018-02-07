@@ -9,9 +9,10 @@
 #ifndef __PULSEWIDTHMODULATION_H__
 #define __PULSEWIDTHMODULATION_H__
 
+#include <string.h>
 #include "Timer.h"
 
-template <class T, class U, typename CO, typename WG, typename CS>
+template <typename T>
 class PulseWidthModulation
 {
 //variables
@@ -19,30 +20,32 @@ public:
 protected:
 private:
 	T * timer;
+	typename T::U_TYPE maxPWM;
+	typename T::U_TYPE minPWM;
 //functions
 public:
 	PulseWidthModulation(T * timer) : timer(timer)
 	{
-		//maxPWM = 0xff;
-		//minPWM = 0x00;
+		memset(&maxPWM, 0xff, sizeof(typename T::U_TYPE));		
+		minPWM = 0;
 	} //PulseWidthModulation
 
 	~PulseWidthModulation()
 	{
 	} //~PulseWidthModulation
 
-	void initPWM(CO co, WG wg, CS cs)
+	void initPWM(typename T::COMPARE_OUTPUT_TYPE co, typename T::WAVE_FORM_GENERATION_TYPE wg, typename T::CLOCK_SELECTION_TYPE cs)
 	{
 		timer->setCompareOutputMode(co);
 		timer->setWaveformGenerationMode(wg);
 		timer->setClockSelection(cs);
 	}
-	/*void PulseWidthModulation8::setTimer(Timer<uint8_t> * timer)
+	void setTimer(T * timer)
 	{
-		PulseWidthModulation8::timer = timer;
+		this->timer = timer;
 	}
-
-	void PulseWidthModulation8::setPWM(uint8_t val)
+/*
+	void setPWM(uint8_t val)
 	{
 		if(val > maxPWM || val < minPWM)
 		{
@@ -102,5 +105,8 @@ private:
 	PulseWidthModulation& operator=( const PulseWidthModulation &c );
 
 }; //PulseWidthModulation
+
+typedef PulseWidthModulation<Timer8> PulseWidthModulation8;
+typedef PulseWidthModulation<Timer16> PulseWidthModulation16;
 
 #endif //__PULSEWIDTHMODULATION_H__
