@@ -42,7 +42,8 @@ C_SRCS +=  \
 ../main.cpp \
 ../src/AnalogToDigital.cpp \
 ../src/GPIO.cpp \
-../src/HD44780.cpp
+../src/HD44780.cpp \
+../src/HighSuply.cpp
 
 
 PREPROCESSING_SRCS += 
@@ -55,25 +56,29 @@ OBJS +=  \
 main.o \
 src/AnalogToDigital.o \
 src/GPIO.o \
-src/HD44780.o
+src/HD44780.o \
+src/HighSuply.o
 
 OBJS_AS_ARGS +=  \
 main.o \
 src/AnalogToDigital.o \
 src/GPIO.o \
-src/HD44780.o
+src/HD44780.o \
+src/HighSuply.o
 
 C_DEPS +=  \
 main.d \
 src/AnalogToDigital.d \
 src/GPIO.d \
-src/HD44780.d
+src/HD44780.d \
+src/HighSuply.d
 
 C_DEPS_AS_ARGS +=  \
 main.d \
 src/AnalogToDigital.d \
 src/GPIO.d \
-src/HD44780.d
+src/HD44780.d \
+src/HighSuply.d
 
 OUTPUT_FILE_PATH +=geiger.elf
 
@@ -89,6 +94,8 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
+
+
 
 
 

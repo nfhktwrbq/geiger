@@ -22,6 +22,7 @@ private:
 	T * timer;
 	typename T::U_TYPE maxPWM;
 	typename T::U_TYPE minPWM;
+	typename T::COMPARE_OUTPUT_TYPE channel;
 //functions
 public:
 	PulseWidthModulation(T * timer) : timer(timer)
@@ -39,13 +40,14 @@ public:
 		timer->setCompareOutputMode(co);
 		timer->setWaveformGenerationMode(wg);
 		timer->setClockSelection(cs);
+		channel = co;
 	}
 	void setTimer(T * timer)
 	{
 		this->timer = timer;
 	}
-/*
-	void setPWM(uint8_t val)
+
+	void setPWM(typename T::U_TYPE val)
 	{
 		if(val > maxPWM || val < minPWM)
 		{
@@ -62,7 +64,7 @@ public:
 		}
 	}
 
-	uint8_t PulseWidthModulation8::getPWM(void)
+	typename T::U_TYPE getPWM(void)
 	{
 		if(channel)
 		{
@@ -74,31 +76,38 @@ public:
 		}
 	}
 
-	void PulseWidthModulation8::setMinPWMBorder(uint8_t border)
+	void setMinPWMBorder(typename T::U_TYPE border)
 	{
 		minPWM = border;
 	}
 
-	void PulseWidthModulation8::setMaxPWMBorder(uint8_t border)
+	void setMaxPWMBorder(typename T::U_TYPE border)
 	{
 		maxPWM = border;
 	}
 
-	uint8_t PulseWidthModulation8::getMinPWMBorder(void)
+	typename T::U_TYPE getMinPWMBorder(void)
 	{
 		return minPWM;
 	}
 
-	uint8_t PulseWidthModulation8::getMaxPWMBorder(void)
+	typename T::U_TYPE getMaxPWMBorder(void)
 	{
 		return maxPWM;
 	}
 
-	void PulseWidthModulation8::setPWMChannel(CHANNEL ch)
+	void setPWMChannel(typename T::COMPARE_OUTPUT_TYPE ch)
 	{
 		channel = ch;
 	}
-	*/
+	
+	void changeOn(int8_t i = 1)
+	{
+		setPWM(getPWM()+i);
+	}
+	
+	
+	
 protected:
 private:
 	PulseWidthModulation( const PulseWidthModulation &c );

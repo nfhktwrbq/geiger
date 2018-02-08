@@ -12,7 +12,7 @@
 
 extern uint32_t count;
 
-
+#define DEFAULT_COUNTER_VOLTAGE 400
 
 
 #endif /* GLOBAL_H_ */

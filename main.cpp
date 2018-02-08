@@ -5,6 +5,7 @@
  * Author : a.tarletskiy
  */ 
 
+#include <util/delay.h>
 
 #include "GPIO.h"
 #include "Timer.h"
@@ -14,10 +15,11 @@
 #include "gvars.h"
 #include "global.h"
 #include "PulseWidthModulation.h"
-
+#include "HighSuply.h"
 
 #include "interrupt.h"
-#include "util/delay.h"
+
+
 
 #define TEST_PIN 14
 
@@ -64,6 +66,13 @@ int main(void)
 	PulseWidthModulation16 pwmHV(&timer16_1);
 	
 	pwm8.initPWM(CO_FAST_PWM_OCnA, WG_FAST_PWM_9BIT, CS_1PR);
+	
+	
+	HighSuply counterSupply(&pwmHV, &adc, AnalogToDigital::CH_3);
+	if(!counterSupply.setVoltage(DEFAULT_COUNTER_VOLTAGE, 5, 250))
+	{
+		while(1);
+	}
 	
 	lcd.init();
 	lcd.sendCmd(0x02);
