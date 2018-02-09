@@ -6,6 +6,7 @@
  */ 
 
 #include <util/delay.h>
+#include <inttypes.h>
 
 #include "GPIO.h"
 #include "Timer.h"
@@ -16,6 +17,8 @@
 #include "global.h"
 #include "PulseWidthModulation.h"
 #include "HighSuply.h"
+#include "LiquidMenu.h"
+#include "MT10S.h"
 
 #include "interrupt.h"
 
@@ -54,7 +57,7 @@ int main(void)
 	pio->pinMode(15, pio->OUTPUT);
 	pio->pinMode(TEST_PIN, pio->OUTPUT);
 	pio->writePin(15, pio->LOW);
-	HD44780 lcd(pio, 16, 17, 18, 19, 23, 24);
+	/*HD44780*/MT10S lcd(pio, 16, 17, 18, 19, 23, 24);
 	AnalogToDigital adc(AnalogToDigital::AREF,0,AnalogToDigital::PR_128);
     adc.setChannel(AnalogToDigital::CH_3);
 	
@@ -66,6 +69,39 @@ int main(void)
 	PulseWidthModulation16 pwmHV(&timer16_1);
 	
 	pwm8.initPWM(CO_FAST_PWM_OCnA, WG_FAST_PWM_9BIT, CS_1PR);
+	
+	
+	
+	
+	
+	
+	// First we need to instantiate the LiquidCrystal object.
+	
+
+	// ----- WELCOME SCREEN -----
+	/// Instantiating a line with one string literal.
+	LiquidLine welcome_line1(1, 0, "Hello Menu");
+
+	/// Instantiating a line with an integer variable.
+	uint8_t oneTwoThree = 123;
+	LiquidLine welcome_line2(2, 1, oneTwoThree);
+
+	/// Forming a screen from the above two lines.
+	LiquidScreen welcome_screen(welcome_line1, welcome_line2);
+	// --------------------------
+
+	// ----- SCREEN 2 -----
+	LiquidLine some_line(0, 0, "Some line");
+	LiquidScreen some_screen(some_line);
+	// --------------------
+
+	// Now let's combine the screens into a menu.
+	LiquidMenu my_menu(lcd, welcome_screen, some_screen);
+	
+	
+	
+	
+	
 	
 	
 	HighSuply counterSupply(&pwmHV, &adc, AnalogToDigital::CH_3);
@@ -80,15 +116,15 @@ int main(void)
 	lcd.print("Hello");
 
 	_delay_ms(4000);
-	lcd.setXY(0,0);
+	lcd.setCursor(0,0);
 	lcd.print("        ");
-	lcd.setXY(0,0);
+	lcd.setCursor(0,0);
 	//lcd.printf("T=%d", t16.getTimerCounter());
     _delay_ms(4000);
     uint16_t i = 0;
     while (1) 
     {
-		lcd.setXY(0,0);
+		lcd.setCursor(0,0);
     	
 		lcd.printf("T=%d", adc.proc());
 

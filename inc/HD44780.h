@@ -37,9 +37,11 @@ public:
 	void sendCmd(uint8_t cmd);
 	void init(void);
 	void print(char ch);
+	void write(char ch);
 	void print(const char * str);
 	void printf(const char * format, ...);
-	void setXY(uint8_t x, uint8_t y);
+	void setCursor(uint8_t col, uint8_t row);
+	void createChar(uint8_t location, uint8_t * chArr);
 	void clear();
 	void home();
 

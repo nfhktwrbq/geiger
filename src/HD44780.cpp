@@ -119,6 +119,11 @@ void HD44780::print(char ch)
 	pio->writePin(pinRS, pio->LOW);
 }
 
+void HD44780::write(char ch)
+{
+	print(ch);
+}
+
 void HD44780::print(const char * str)
 {
 	while(* str)
@@ -139,10 +144,10 @@ void HD44780::printf(const char * format, ...)
 	print(str);
 }
 
-void HD44780::setXY(uint8_t x, uint8_t y)
+void HD44780::setCursor(uint8_t col, uint8_t row)
 {
 	uint8_t adr;
-	if(!x)
+	if(!row)
 	{
 		adr = 0x80;
 	}
@@ -150,8 +155,22 @@ void HD44780::setXY(uint8_t x, uint8_t y)
 	{
 		adr = 0xC0;
 	}
-	adr |= y;
+	adr |= col;
 	sendCmd(adr);	
+}
+
+void HD44780::createChar(uint8_t location, uint8_t * chArr)
+{
+	location &= 0x7;            // we only have 8 locations 0-7
+	
+	sendCmd(0x40 | (location << 3));
+	_delay_us(30);
+	
+	for (uint8_t i = 0; i < 8; i++)
+	{
+		write(chArr[i]);      // call the virtual write method
+		_delay_us(40);
+	}
 }
 
 void HD44780::clear()

@@ -34,16 +34,25 @@ LINKER_SCRIPT_DEP:=
 # Every subdirectory with source files must be described here
 SUBDIRS :=  \
 ../inc \
+../menu \
+../menu/inc \
+../menu/src \
 ../src
 
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
 ../main.cpp \
+../menu/src/LiquidLine.cpp \
+../menu/src/LiquidMenu.cpp \
+../menu/src/LiquidScreen.cpp \
+../menu/src/LiquidSystem.cpp \
+../menu/src/recognizeType.cpp \
 ../src/AnalogToDigital.cpp \
 ../src/GPIO.cpp \
 ../src/HD44780.cpp \
-../src/HighSuply.cpp
+../src/HighSuply.cpp \
+../src/MT10S.cpp
 
 
 PREPROCESSING_SRCS += 
@@ -54,31 +63,55 @@ ASM_SRCS +=
 
 OBJS +=  \
 main.o \
+menu/src/LiquidLine.o \
+menu/src/LiquidMenu.o \
+menu/src/LiquidScreen.o \
+menu/src/LiquidSystem.o \
+menu/src/recognizeType.o \
 src/AnalogToDigital.o \
 src/GPIO.o \
 src/HD44780.o \
-src/HighSuply.o
+src/HighSuply.o \
+src/MT10S.o
 
 OBJS_AS_ARGS +=  \
 main.o \
+menu/src/LiquidLine.o \
+menu/src/LiquidMenu.o \
+menu/src/LiquidScreen.o \
+menu/src/LiquidSystem.o \
+menu/src/recognizeType.o \
 src/AnalogToDigital.o \
 src/GPIO.o \
 src/HD44780.o \
-src/HighSuply.o
+src/HighSuply.o \
+src/MT10S.o
 
 C_DEPS +=  \
 main.d \
+menu/src/LiquidLine.d \
+menu/src/LiquidMenu.d \
+menu/src/LiquidScreen.d \
+menu/src/LiquidSystem.d \
+menu/src/recognizeType.d \
 src/AnalogToDigital.d \
 src/GPIO.d \
 src/HD44780.d \
-src/HighSuply.d
+src/HighSuply.d \
+src/MT10S.d
 
 C_DEPS_AS_ARGS +=  \
 main.d \
+menu/src/LiquidLine.d \
+menu/src/LiquidMenu.d \
+menu/src/LiquidScreen.d \
+menu/src/LiquidSystem.d \
+menu/src/recognizeType.d \
 src/AnalogToDigital.d \
 src/GPIO.d \
 src/HD44780.d \
-src/HighSuply.d
+src/HighSuply.d \
+src/MT10S.d
 
 OUTPUT_FILE_PATH +=geiger.elf
 
@@ -105,17 +138,36 @@ LINKER_SCRIPT_DEP+=
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 ./%.o: .././%.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
-	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DDEBUG -DF_CPU=16000000UL  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.150\include" -I"../inc"  -O1 -fno-threadsafe-statics -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atmega328p -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.150\gcc\dev\atmega328p" -c -fno-threadsafe-statics -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DDEBUG -DF_CPU=16000000UL  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.150\include" -I"../inc" -I"../menu/inc"  -O1 -fno-threadsafe-statics -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atmega328p -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.150\gcc\dev\atmega328p" -c -fno-threadsafe-statics -std=c++11 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+menu/src/%.o: ../menu/src/%.cpp
+	@echo Building file: $<
+	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DDEBUG -DF_CPU=16000000UL  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.150\include" -I"../inc" -I"../menu/inc"  -O1 -fno-threadsafe-statics -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atmega328p -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.150\gcc\dev\atmega328p" -c -fno-threadsafe-statics -std=c++11 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
 src/%.o: ../src/%.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
-	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DDEBUG -DF_CPU=16000000UL  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.150\include" -I"../inc"  -O1 -fno-threadsafe-statics -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atmega328p -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.150\gcc\dev\atmega328p" -c -fno-threadsafe-statics -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DDEBUG -DF_CPU=16000000UL  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.150\include" -I"../inc" -I"../menu/inc"  -O1 -fno-threadsafe-statics -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atmega328p -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.150\gcc\dev\atmega328p" -c -fno-threadsafe-statics -std=c++11 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
