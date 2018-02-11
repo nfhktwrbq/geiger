@@ -9,7 +9,9 @@
 #ifndef __MT10S_H__
 #define __MT10S_H__
 
+
 #include "HD44780.h"
+
 
 class MT10S : public HD44780
 {
@@ -23,6 +25,7 @@ private:
 public:
 	void print(char ch);
 	void print(const char * str);
+	void printf(const char * format, ...);
 	void write(char ch);
 	void setCursor(uint8_t col, uint8_t row);
 	MT10S();

@@ -19,8 +19,8 @@
 #include "HighSuply.h"
 #include "LiquidMenu.h"
 #include "MT10S.h"
+#include "Counter.h"
 
-#include "interrupt.h"
 
 
 
@@ -65,13 +65,19 @@ int main(void)
 	Timer8 timer8_2(&TCCR2A, &TCCR2B, &TCNT2, &OCR2A, &OCR2B, &TIMSK2, &TIFR2, &ASSR, &GTCCR);
 	Timer16 timer16_1(&TCCR1A, &TCCR1B, &TCNT1, &OCR1A, &OCR1B, &TIMSK1, &TIFR1, &TCCR1C, &ICR1);
 	
+	timer8_0.setCompareOutputMode(CO_FAST_PWM_OCnB);
+	timer8_0.setWaveformGenerationMode(WG_FAST_PWM_1);
+	timer8_0.setClockSelection(CS_1PR);
+	timer8_0.setInterrupt(INT_OVERFLOW);
+
 	PulseWidthModulation8 pwm8(&timer8_0);
 	PulseWidthModulation16 pwmHV(&timer16_1);
 	
-	pwm8.initPWM(CO_FAST_PWM_OCnA, WG_FAST_PWM_9BIT, CS_1PR);
 	
+	pwmHV.initPWM(CO_FAST_PWM_OCnA, WG_FAST_PWM_9BIT, CS_1PR);
+	pwmHV.setMaxPWMBorder(80);
 	
-	
+	lcd.init();/*
 	
 	
 	
@@ -103,14 +109,21 @@ int main(void)
 	
 	
 	
+	*/
+	
+	
 	
 	HighSuply counterSupply(&pwmHV, &adc, AnalogToDigital::CH_3);
+
+	Counter counter(&counterSupply);
+
 	if(!counterSupply.setVoltage(DEFAULT_COUNTER_VOLTAGE, 5, 250))
 	{
 		while(1);
 	}
 	
-	lcd.init();
+
+
 	lcd.sendCmd(0x02);
 	_delay_ms(500);
 	lcd.print("Hello");
@@ -121,22 +134,22 @@ int main(void)
 	lcd.setCursor(0,0);
 	//lcd.printf("T=%d", t16.getTimerCounter());
     _delay_ms(4000);
-    uint16_t i = 0;
+   // timer16_1.setOutputCompareA(1);
     while (1) 
     {
 		lcd.setCursor(0,0);
-    	
-		lcd.printf("T=%d", adc.proc());
+    	lcd.clear();
+		lcd.printf("T=%d P=%d", adc.proc(), pwmHV.getPWM());
 
 		if(pio->readPin(6))
 		{
-			//t16.setOutputCompareA(i);
-			i++;
-		}
-		_delay_ms(500);
-		pio->writePin(TEST_PIN, pio->LOW);
+			pwmHV.changeOn(1);
+
+		pio->writePin(TEST_PIN, pio->HIGH);
 		_delay_ms(50);
 		pio->writePin(TEST_PIN, pio->LOW);
+		}
+		_delay_ms(500);
 
     }
 }

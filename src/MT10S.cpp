@@ -5,7 +5,8 @@
 * Author: a.tarletskiy
 */
 
-
+#include <stdarg.h>
+#include <stdio.h>
 #include "MT10S.h"
 
 
@@ -30,6 +31,7 @@ void MT10S::print(char ch)
 	if(cursorPos == 0x07)
 	{
 		cursorPos = 0x40;
+		HD44780::setCursor(0, 1);
 	}
 	else
 	{
@@ -49,6 +51,17 @@ void MT10S::print(const char * str)
 void MT10S::write(char ch)
 {	
 	MT10S::print(ch);
+}
+
+void MT10S::printf(const char * format, ...)
+{	
+	char str[MAX_STRING_LEN];
+	
+	va_list args;
+	va_start(args, format);
+	vsnprintf(str, MAX_STRING_LEN, format, args);
+	va_end(args);
+	print(str);
 }
 
 void MT10S::setCursor(uint8_t col, uint8_t row)

@@ -22,17 +22,24 @@ private:
 	AnalogToDigital * adc;
 	PulseWidthModulation16 * pwm;
 	uint8_t adcChannel;
+	uint16_t targetVoltage;
+	uint16_t gate;
 	static const uint8_t VOLTAGE_NUMERATOR = 1;
 	static const uint8_t VOLTAGE_DENOMINATOR = 2;
 	static const uint8_t TIMEOUT_GATE = 10;
+	
 //functions
 public:
 	HighSuply();
 	HighSuply(PulseWidthModulation16 * pwm, AnalogToDigital * adc, uint8_t adcChannel);
 	~HighSuply();
 	uint16_t getVoltage();
-	bool fastHsAdjust(uint16_t HV, uint16_t gate);
+	bool fastHsAdjust(void);
 	bool setVoltage(uint16_t HV, uint16_t gate, uint16_t delay);
+	void setTargetVoltage(uint16_t val);
+	uint16_t getTargetVoltage(void);
+	void setGate(uint16_t val);
+	uint16_t getGate(void);
 protected:
 private:
 	HighSuply( const HighSuply &c );

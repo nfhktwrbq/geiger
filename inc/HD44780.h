@@ -17,6 +17,7 @@ class HD44780
 //variables
 public:
 protected:
+	const static size_t MAX_STRING_LEN = 40;
 private:
 	GPIO * pio;
 	uint8_t pinD4;
@@ -26,7 +27,7 @@ private:
 	uint8_t pinRS;
 	uint8_t pinE;
 	
-	const static size_t MAX_STRING_LEN = 40;
+	
 
 //functions
 public:
