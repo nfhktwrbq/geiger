@@ -1,5 +1,8 @@
+
+#include <avr/io.h>
+#include <avr/interrupt.h>
 #include "Counter.h"
-#include "interrupt.h"
+
 
 Counter::Counter()
 {
@@ -28,24 +31,71 @@ void Counter::proc(void)
 
 void Counter::procCounter(void)
 {
-	static uint32_t timer = 0;
-	static uint32_t prevCount = 0;
+	static uint32_t sTimer = 0;	
 	
-	if (times() - timer > SECOND)
+	if (timer - sTimer > SECOND)
 	{
-		timer = times();
-		countSpeed = counts() - prevCount;
-		prevCount = counts();
+		sTimer = timer;
+		countSpeed = counter;
+		counter = 0;
 	} 
 }
 
 void Counter::procHighSuply(void)
 {
-	static uint32_t timer = 0; 	
+	static uint32_t sTimer = 0; 	
 
-	if (times() - timer > HIGH_SUPLY_ADJUST_PERIOD)
+	if (timer - sTimer > HIGH_SUPLY_ADJUST_PERIOD)
 	{
-		timer = times();
+		sTimer = timer;
 		highSuply->fastHsAdjust();
 	} 
 }
+
+void Counter::initExternalInterrupts()
+{
+	SREG |= 0x80;
+	DDRD &= 0x11111011;
+	EICRA = 0x02;
+	EIMSK = 0x01;
+}
+
+uint32_t Counter::getCounter(void)
+{
+	return counter;
+}
+
+void Counter::setCounter(uint32_t counter)
+{
+	this->counter = counter;
+}
+
+uint32_t Counter::getTimer(void)
+{
+	return timer;
+}
+
+void Counter::setTimer(uint32_t timer)
+{
+	this->timer = timer;
+}
+
+ISR (INT0_vect)
+{
+	counter.setCounter(counter.getCounter() + 1);
+}
+
+ISR (TIMER2_OVF_vect)
+{
+}
+
+ISR (TIMER1_OVF_vect)
+{
+}
+
+ISR (TIMER0_OVF_vect)
+{
+	counter.setTimer(counter.getTimer() + 1);
+}
+
+Counter counter;

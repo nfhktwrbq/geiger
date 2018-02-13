@@ -116,6 +116,7 @@ int main(void)
 	HighSuply counterSupply(&pwmHV, &adc, AnalogToDigital::CH_3);
 
 	Counter counter(&counterSupply);
+	//Counter counter = Counter::getInstance();
 
 	if(!counterSupply.setVoltage(DEFAULT_COUNTER_VOLTAGE, 5, 250))
 	{

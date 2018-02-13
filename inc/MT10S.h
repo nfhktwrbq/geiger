@@ -23,11 +23,12 @@ private:
 
 //functions
 public:
-	void print(char ch);
-	void print(const char * str);
+	using HD44780::print;
+	virtual void print(char ch);
+	/*void print(const char * str);
 	void printf(const char * format, ...);
-	void write(char ch);
-	void setCursor(uint8_t col, uint8_t row);
+	void write(char ch);*/
+	virtual void setCursor(uint8_t col, uint8_t row);
 	MT10S();
 	MT10S(GPIO * pio, uint8_t pinD4, uint8_t pinD5, uint8_t pinD6, uint8_t pinD7, uint8_t pinRS, uint8_t pinE);
 	~MT10S();
