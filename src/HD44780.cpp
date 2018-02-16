@@ -128,7 +128,7 @@ void HD44780::print(const char * str)
 {
 	while(* str)
 	{
-		print(* str);
+		this->print(* str);
 		str++;		
 	}
 }

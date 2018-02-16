@@ -123,9 +123,9 @@ class Timer
 		void setWaveformGenerationMode(WG mode)
 		{
 			*TCCRA &= 0xfc;
-			*TCCRB &= 0xf7;
+			*TCCRB &= 0xe7;
 			*TCCRA |= (mode & 0x03);
-			*TCCRB |= (mode & 0x18);
+			*TCCRB |= ((mode  & 0x0c) << 1);
 		}
 
 		uint8_t getWaveformGenerationMode(void)

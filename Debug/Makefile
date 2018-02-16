@@ -49,6 +49,8 @@ C_SRCS +=  \
 ../menu/src/LiquidSystem.cpp \
 ../menu/src/recognizeType.cpp \
 ../src/AnalogToDigital.cpp \
+../src/Buzzer.cpp \
+../src/Counter.cpp \
 ../src/GPIO.cpp \
 ../src/HD44780.cpp \
 ../src/HighSuply.cpp \
@@ -69,6 +71,8 @@ menu/src/LiquidScreen.o \
 menu/src/LiquidSystem.o \
 menu/src/recognizeType.o \
 src/AnalogToDigital.o \
+src/Buzzer.o \
+src/Counter.o \
 src/GPIO.o \
 src/HD44780.o \
 src/HighSuply.o \
@@ -82,6 +86,8 @@ menu/src/LiquidScreen.o \
 menu/src/LiquidSystem.o \
 menu/src/recognizeType.o \
 src/AnalogToDigital.o \
+src/Buzzer.o \
+src/Counter.o \
 src/GPIO.o \
 src/HD44780.o \
 src/HighSuply.o \
@@ -95,6 +101,8 @@ menu/src/LiquidScreen.d \
 menu/src/LiquidSystem.d \
 menu/src/recognizeType.d \
 src/AnalogToDigital.d \
+src/Buzzer.d \
+src/Counter.d \
 src/GPIO.d \
 src/HD44780.d \
 src/HighSuply.d \
@@ -108,6 +116,8 @@ menu/src/LiquidScreen.d \
 menu/src/LiquidSystem.d \
 menu/src/recognizeType.d \
 src/AnalogToDigital.d \
+src/Buzzer.d \
+src/Counter.d \
 src/GPIO.d \
 src/HD44780.d \
 src/HighSuply.d \
@@ -127,6 +137,10 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
+
+
+
+
 
 
 

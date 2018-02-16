@@ -33,26 +33,26 @@ private:
 public:
 	HD44780();
 	HD44780(GPIO * pio, uint8_t pinD4, uint8_t pinD5, uint8_t pinD6, uint8_t pinD7, uint8_t pinRS, uint8_t pinE);
-	~HD44780();
+	virtual ~HD44780();
 	
-	void sendCmd(uint8_t cmd);
-	void init(void);
-	void print(char ch);
-	void write(char ch);
-	void print(const char * str);
-	void printf(const char * format, ...);
-	void setCursor(uint8_t col, uint8_t row);
-	void createChar(uint8_t location, uint8_t * chArr);
-	void clear();
-	void home();
+	virtual void sendCmd(uint8_t cmd);
+	virtual void init(void);
+	virtual void print(char ch);
+	virtual void write(char ch);
+	virtual void print(const char * str);
+	virtual void printf(const char * format, ...);
+	virtual void setCursor(uint8_t col, uint8_t row);
+	virtual void createChar(uint8_t location, uint8_t * chArr);
+	virtual void clear();
+	virtual void home();
 
 protected:
 private:
 	HD44780( const HD44780 &c );
 	HD44780& operator=( const HD44780 &c );
 	
-	void setData(uint8_t data);
-	void strobe(void);
+	virtual void setData(uint8_t data);
+	virtual void strobe(void);
 
 }; //HD44780
 

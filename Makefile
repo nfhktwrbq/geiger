@@ -12,7 +12,7 @@ MENUSRCDIR = menu/src
 SRCS = main.cpp $(SRCSDIR)/GPIO.cpp $(SRCSDIR)/HD44780.cpp $(SRCSDIR)/AnalogToDigital.cpp  \
 		 $(SRCSDIR)/MT10S.cpp $(MENUSRCDIR)/recognizeType.cpp $(MENUSRCDIR)/LiquidLine.cpp \
 		 $(MENUSRCDIR)/LiquidScreen.cpp $(MENUSRCDIR)/LiquidMenu.cpp $(MENUSRCDIR)/LiquidSystem.cpp \
-		 $(SRCSDIR)/HighSuply.cpp $(SRCSDIR)/Counter.cpp
+		 $(SRCSDIR)/HighSuply.cpp $(SRCSDIR)/Counter.cpp $(SRCSDIR)/Buzzer.cpp
 		 
 
  

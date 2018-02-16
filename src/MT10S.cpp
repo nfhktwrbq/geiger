@@ -38,7 +38,7 @@ void MT10S::print(char ch)
 		cursorPos++;
 	}		
 }
-
+/*
 void MT10S::print(const char * str)
 {
 	while(* str)
@@ -63,7 +63,7 @@ void MT10S::printf(const char * format, ...)
 	va_end(args);
 	print(str);
 }
-
+*/
 void MT10S::setCursor(uint8_t col, uint8_t row)
 {
 	HD44780::setCursor(col, 0);
