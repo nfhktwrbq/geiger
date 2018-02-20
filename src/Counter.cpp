@@ -8,7 +8,7 @@ Counter::Counter()
 {
 }
 
-Counter::Counter(HighSuply * highSuply, Buzzer * buzzer) : highSuply(highSuply), buzzer(buzzer)
+Counter::Counter(HighSuply * highSuply, Buzzer * buzzer, LiquidMenu * liquidMenu) : highSuply(highSuply), buzzer(buzzer), liquidMenu(liquidMenu)
 {
 	highSuply->setTargetVoltage(400);
 	highSuply->setGate(5);
@@ -59,10 +59,11 @@ void Counter::procHighSuply(void)
 
 void Counter::initExternalInterrupts()
 {
-	SREG |= 0x80;
-	DDRD &= 0x11111011;
+	
+	DDRD &= 0b11111011;
 	EICRA = 0x02;
 	EIMSK = 0x01;
+	SREG |= 0x80;
 }
 
 uint32_t Counter::getCounter(void)
@@ -85,6 +86,11 @@ void Counter::setTimer(uint32_t timer)
 	this->timer = timer;
 }
 
+void Counter::setBuzzer(Buzzer * buzzer)
+{
+	this->buzzer = buzzer;
+}
+
 void Counter::interruptHandlerINT0(void)
 {
 	counter++;
@@ -105,7 +111,7 @@ void Counter::interruptHandlerTIMER1_Overflow(void)
 	this->timer++;
 	if(buzzer->isOn())
 	{
-		if(tmp < Buzzer::BUZZER_TIME_ON)
+		if(tmp < Buzzer::TIME_ON)
 		{
 			tmp++;
 		}
@@ -120,6 +126,8 @@ void Counter::interruptHandlerTIMER0_Overflow(void)
 {
 	
 }
+
+
 
 ISR (INT0_vect)
 {

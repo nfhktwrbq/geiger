@@ -6,7 +6,9 @@
 #include "HighSuply.h"
 #include "Buzzer.h"
 #include "Timer.h"
-
+#include "GPIO.h"
+#include "MT10S.h"
+#include "LiquidMenu.h"
 
 ISR(INT0_vect);
 ISR(TIMER2_OVF_vect);
@@ -19,15 +21,16 @@ class Counter
 		uint32_t countSpeed;
 		static const uint32_t SECOND = F_CPU / 512;
 		static const uint32_t HIGH_SUPLY_ADJUST_PERIOD = SECOND * 10;
-		HighSuply * highSuply;
-		Buzzer * buzzer;
 		volatile uint32_t timer = 0;
 		volatile uint32_t counter = 0;
-		
+		HighSuply * highSuply;
+		Buzzer * buzzer;		
+		LiquidMenu * liquidMenu;	
+		//lcd.init();
 		
 	public:
 		Counter();
-		Counter(HighSuply * highSuply, Buzzer * buzzer);
+		Counter(HighSuply * highSuply, Buzzer * buzzer, LiquidMenu * liquidMenu);
 		~Counter();
 		
 		void init(void);
@@ -37,6 +40,7 @@ class Counter
 		uint32_t getTimer(void);
 		void setTimer(uint32_t);
 		uint32_t getCountSpeed(void);
+		void setBuzzer(Buzzer * buzzer);
 	private:
 		
 		void procCounter(void);

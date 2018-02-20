@@ -9,10 +9,10 @@ SRCSDIR = src
 MENUSRCDIR = menu/src
  
 # Задаем из каких файлов собирать проект, можно указать несколько файлов
-SRCS = main.cpp $(SRCSDIR)/GPIO.cpp $(SRCSDIR)/HD44780.cpp $(SRCSDIR)/AnalogToDigital.cpp  \
-		 $(SRCSDIR)/MT10S.cpp $(MENUSRCDIR)/recognizeType.cpp $(MENUSRCDIR)/LiquidLine.cpp \
+SRCS = main.cpp $(SRCSDIR)/GPIO.cpp $(SRCSDIR)/HD44780.cpp $(SRCSDIR)/MT10S.cpp \
+		 $(SRCSDIR)/AnalogToDigital.cpp  $(MENUSRCDIR)/recognizeType.cpp $(MENUSRCDIR)/LiquidLine.cpp \
 		 $(MENUSRCDIR)/LiquidScreen.cpp $(MENUSRCDIR)/LiquidMenu.cpp $(MENUSRCDIR)/LiquidSystem.cpp \
-		 $(SRCSDIR)/HighSuply.cpp $(SRCSDIR)/Counter.cpp $(SRCSDIR)/Buzzer.cpp
+		 $(SRCSDIR)/HighSuply.cpp $(SRCSDIR)/Counter.cpp $(SRCSDIR)/Buzzer.cpp $(SRCSDIR)/Buttons.cpp
 		 
 
  

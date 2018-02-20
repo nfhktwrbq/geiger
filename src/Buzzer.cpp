@@ -11,8 +11,9 @@
 
 Buzzer::Buzzer(GPIO * pio) : pio(pio)
 {
-	pio->pinMode(BUZZER_PIN, GPIO::OUTPUT);
-	pio->writePin(BUZZER_PIN, GPIO::LOW);
+	pio->pinMode(PIN, GPIO::OUTPUT);
+	pio->writePin(PIN, GPIO::LOW);
+	onTime = TIME_ON;
 } //Buzzer
 
 // default destructor
@@ -22,23 +23,24 @@ Buzzer::~Buzzer()
 
 void Buzzer::init(void)
 {
-	pio->pinMode(BUZZER_PIN, GPIO::OUTPUT);
-	pio->writePin(BUZZER_PIN, GPIO::LOW);
+	pio->pinMode(PIN, GPIO::OUTPUT);
+	pio->writePin(PIN, GPIO::LOW);
 }
 
-void Buzzer::on(void)
+void Buzzer::on(uint8_t onTime)//default = BUZZER_ON_TIME
 {
-	pio->writePin(BUZZER_PIN, GPIO::HIGH);
+	this->onTime = onTime;
+	pio->writePin(PIN, GPIO::HIGH);
 }
 
 void Buzzer::off(void)
 {
-	pio->writePin(BUZZER_PIN, GPIO::LOW);
+	pio->writePin(PIN, GPIO::LOW);
 }
 
 bool Buzzer::isOn(void)
 {
-	return pio->readPin(BUZZER_PIN);
+	return pio->readPin(PIN);
 }
 
 void Buzzer::enable(bool enbl)
@@ -49,4 +51,14 @@ void Buzzer::enable(bool enbl)
 bool Buzzer::isEnable(void)
 {
 	return en;
+}
+
+void Buzzer::setOnTime(uint8_t onTime)
+{
+	this->onTime = onTime;
+}
+
+uint8_t Buzzer::getOnTime(void)
+{
+	return onTime;
 }

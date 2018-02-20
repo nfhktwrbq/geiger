@@ -23,6 +23,7 @@ private:
 	typename T::U_TYPE maxPWM;
 	typename T::U_TYPE minPWM;
 	typename T::COMPARE_OUTPUT_TYPE channel;
+	uint8_t cs;
 //functions
 public:
 	PulseWidthModulation(T * timer) : timer(timer)
@@ -41,6 +42,7 @@ public:
 		timer->setWaveformGenerationMode(wg);
 		timer->setClockSelection(cs);
 		channel = co;
+		this->cs = cs;
 	}
 	void setTimer(T * timer)
 	{
@@ -54,7 +56,7 @@ public:
 			return;
 		}
 		
-		if(channel)
+		if(channel == COMPARE_OUTPUT_8::CO_FAST_PWM_OCnA || channel == COMPARE_OUTPUT_8::CO_FAST_PWM_OCnA_INVERTING)
 		{
 			timer->setOutputCompareA(val);
 		}
@@ -66,7 +68,7 @@ public:
 
 	typename T::U_TYPE getPWM(void)
 	{
-		if(channel)
+		if(channel == COMPARE_OUTPUT_8::CO_FAST_PWM_OCnA || channel == COMPARE_OUTPUT_8::CO_FAST_PWM_OCnA_INVERTING)
 		{
 			return timer->getOutputCompareA();
 		}

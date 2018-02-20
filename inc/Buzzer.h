@@ -16,10 +16,12 @@ class Buzzer
 {
 //variables
 public:
-	static const uint8_t BUZZER_TIME_ON = 5;
-	static const uint8_t BUZZER_PIN = 14;
+	static const uint8_t TIME_ON = 5;
+	static const uint8_t PIN = 14;
+	
 protected:
 private:
+	uint8_t onTime = 5;
 	GPIO * pio;
 	bool en;
 	
@@ -29,11 +31,13 @@ public:
 	~Buzzer();
 	
 	void init(void);
-	void on(void);
+	void on(uint8_t onTime = TIME_ON);
 	void off(void);
 	bool isOn(void);
 	void enable(bool enbl);
 	bool isEnable(void);
+	void setOnTime(uint8_t onTime);
+	uint8_t getOnTime(void);
 protected:
 private:
 	Buzzer( const Buzzer &c );
