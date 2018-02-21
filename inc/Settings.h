@@ -33,6 +33,7 @@ public:
 	~Settings();
 	bool init(void);
 	void set(SETTING setting, uint8_t value);
+	uint8_t get(SETTING setting);
 	void save(void);
 protected:
 private:

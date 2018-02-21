@@ -56,6 +56,11 @@ void Settings::set(SETTING setting, uint8_t value)
 	settings[setting] = value;
 }
 
+uint8_t Settings::get(SETTING setting)
+{
+	return settings[setting];
+}
+
 void Settings::save(void)
 {
 	for(uint8_t i = 0; i < SETTINGS_NUM; i++)
