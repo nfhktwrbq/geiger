@@ -124,13 +124,53 @@ void HD44780::write(char ch)
 	print(ch);
 }
 
-void HD44780::print(const char * str)
+void HD44780::print(char * str)
 {
 	while(* str)
 	{
 		this->print(* str);
 		str++;		
 	}
+}
+
+void HD44780::print(const char * str)
+{
+	printf("%s", str);
+}
+
+void HD44780::print(uint8_t val)
+{
+	printf("%u", val);
+}
+
+void HD44780::print(uint16_t val)
+{
+	printf("%u", val);
+}
+
+void HD44780::print(uint32_t val)
+{
+	printf("%u", val);
+}
+
+void HD44780::print(int16_t val)
+{
+	printf("%d", val);
+}
+
+void HD44780::print(int32_t val)
+{
+	printf("%d", val);
+}
+
+void HD44780::print(float val)
+{
+	printf("%f", val);
+}
+
+void HD44780::print(double val)
+{
+	printf("%f", val);
 }
 
 void HD44780::printf(const char * format, ...)

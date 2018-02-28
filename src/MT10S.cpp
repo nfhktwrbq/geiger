@@ -13,11 +13,13 @@
 // default constructor
 MT10S::MT10S()
 {
+	cursorPos = 0;
 } //MT10S
 
 MT10S::MT10S(GPIO * pio, uint8_t pinD4, uint8_t pinD5, uint8_t pinD6, uint8_t pinD7, uint8_t pinRS, uint8_t pinE) :
 HD44780::HD44780(pio, pinD4, pinD5, pinD6, pinD7, pinRS, pinE)
 {
+	cursorPos = 0;
 } //MT10S
 
 // default destructor

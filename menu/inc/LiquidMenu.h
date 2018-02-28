@@ -552,6 +552,8 @@ private:
   */
   bool call_function(uint8_t number) const;
 
+  void set_focus(uint8_t focus = 1);
+
   LiquidLine *_p_liquidLine[MAX_LINES]; ///< The LiquidLine objects
   uint8_t _lineCount; ///< Count of the LiquidLine objects
   uint8_t _focus; ///< Number representing the focus position

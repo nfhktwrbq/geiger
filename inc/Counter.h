@@ -25,12 +25,11 @@ class Counter
 		volatile uint32_t counter = 0;
 		HighSuply * highSuply;
 		Buzzer * buzzer;		
-		LiquidMenu * liquidMenu;	
 		//lcd.init();
 		
 	public:
 		Counter();
-		Counter(HighSuply * highSuply, Buzzer * buzzer, LiquidMenu * liquidMenu);
+		Counter(HighSuply * highSuply, Buzzer * buzzer);
 		~Counter();
 		
 		void init(void);

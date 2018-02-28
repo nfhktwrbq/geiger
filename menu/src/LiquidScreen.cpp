@@ -59,7 +59,8 @@ bool LiquidScreen::add_line(LiquidLine &liquidLine) {
 	if (_lineCount < MAX_LINES) {
 		_p_liquidLine[_lineCount] = &liquidLine;
 		_lineCount++;
-		_focus++;
+		//_focus++;
+		_focus = 0;
 		return true;
 	}
 	return false;
@@ -120,4 +121,9 @@ bool LiquidScreen::call_function(uint8_t number) const {
 		return _p_liquidLine[_focus]->call_function(number);
 	}
 	return false;
+}
+
+void LiquidScreen::set_focus(uint8_t focus)
+{
+	_focus = focus;
 }

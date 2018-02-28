@@ -8,7 +8,7 @@ Counter::Counter()
 {
 }
 
-Counter::Counter(HighSuply * highSuply, Buzzer * buzzer, LiquidMenu * liquidMenu) : highSuply(highSuply), buzzer(buzzer), liquidMenu(liquidMenu)
+Counter::Counter(HighSuply * highSuply, Buzzer * buzzer) : highSuply(highSuply), buzzer(buzzer)
 {
 	highSuply->setTargetVoltage(400);
 	highSuply->setGate(5);

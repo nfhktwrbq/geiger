@@ -26,36 +26,57 @@
 #define TEST_PIN 14
 
 void qqq(void);
+void f1(void);
+void buttonTest(Buttons & buttons, Buzzer & buzzer);
+
+uint32_t gCountSpeed = 0;
+char gCountUnit[20] = {" uR/h"};
 
 GPIO * pio = &GPIO::Instance();
 
-	MT10S lcd(pio, 16, 17, 18, 19, 23, 24);
-	
-	Buttons buttons(pio);
+MT10S lcd(pio, 16, 17, 18, 19, 23, 24);
 
-	Timer8 timer8_0(&TCCR0A, &TCCR0B, &TCNT0, &OCR0A, &OCR0B, &TIMSK0, &TIFR0, &GTCCR, &GTCCR);	
-	PulseWidthModulation8 pwmLCDLED(&timer8_0);
 
-	// First we need to instantiate the LiquidCrystal object.	
 
-	// ----- WELCOME SCREEN -----
-	/// Instantiating a line with one string literal.
-	LiquidLine welcome_line(1, 0, "PWM");
-	/// Forming a screen from the above two lines.
-	LiquidScreen welcome_screen(welcome_line);
-	// --------------------------
+Timer8 timer8_0(&TCCR0A, &TCCR0B, &TCNT0, &OCR0A, &OCR0B, &TIMSK0, &TIFR0, &GTCCR, &GTCCR);	
+PulseWidthModulation8 pwmLCDLED(&timer8_0);
 
-	// ----- SCREEN 2 -----
-	LiquidLine some_line(0, 0, "Some line");
-	LiquidScreen some_screen(some_line);
-	// --------------------
+//--------------work-menu-------------------	
 
-	// Now let's combine the screens into a menu.
-	LiquidMenu my_menu(lcd, welcome_screen, some_screen);	
-	
+LiquidLine searchLine(1, 0, gCountSpeed, gCountUnit);
+LiquidScreen searchScreen(searchLine);
+
+LiquidLine expositionLine(0, 0, "EXPO");
+LiquidScreen expositionScreen(expositionLine);
+
+LiquidMenu workMenu(lcd, searchScreen, expositionScreen);
+
+//--------------settings-menu-------------------
+
+LiquidLine lcdLedLine(1, 0, "LCD");
+LiquidScreen lcdLedScreen(lcdLedLine);
+
+LiquidLine buzzerLine(0, 0, "BUZZER");
+LiquidScreen buzzerScreen(buzzerLine);
+
+LiquidLine backLine(0, 0, "BACK");
+//LiquidLine backLine2(0, 0, "BACK2");
+//LiquidLine backLine3(0, 0, "BACK3");
+LiquidScreen backScreen(backLine);
+
+LiquidMenu settingsMenu(lcd, lcdLedScreen, buzzerScreen, backScreen);
+
+
+
+LiquidSystem menuSystem(workMenu, settingsMenu);	
+
+
 	
 int main(void)
 {
+
+	backLine.attach_function(1,f1);
+
 	lcd.init();
 	pio->pinMode(11,GPIO::OUTPUT);
 
@@ -84,36 +105,36 @@ int main(void)
 	Buzzer buzzerStatus(pio);
 	buzzer.enable(true);		
 	
-	if(!welcome_line.attach_function(1, qqq))
-	{
-	 	lcd.clear();
-	 	lcd.setCursor(0,0);
-	  	lcd.printf("FALSE");
-	  	_delay_ms(1000);
-	}else
-	{
-		lcd.clear();
-	 	lcd.setCursor(0,0);
-	  	lcd.printf("F=%d",qqq);
-	  	_delay_ms(1000);
-	}
-	welcome_line.attach_function(2, qqq);
-some_line.attach_function(1, qqq);
-some_line.attach_function(2, qqq);
+	//if(!welcome_line.attach_function(1, qqq))
+	//{
+	// 	lcd.clear();
+	// 	lcd.setCursor(0,0);
+	 // 	lcd.printf("FALSE");
+	  //	_delay_ms(1000);
+	// }else
+	// {
+	// 	lcd.clear();
+	//  	lcd.setCursor(0,0);
+	//   	lcd.printf("F=%d",qqq);
+	//   //	_delay_ms(1000);
+	// }
+	// welcome_line.attach_function(2, qqq);
+//some_line.attach_function(1, qqq);
+//some_line.attach_function(2, qqq);
 	/// Instantiating a line with an integer variable.
 	//uint8_t oneTwoThree = 123;
 	//LiquidLine welcome_line2(2, 1, oneTwoThree);
 	//LiquidLine welcome_line3(3, 2, "Third mwnu");
 
-	_delay_ms(1000);
+//	_delay_ms(1000);
 	 lcd.setCursor(0,0);
     lcd.printf("1 = %d", TCCR0A);
-	_delay_ms(1000);
+//	_delay_ms(1000);
 
-	_delay_ms(1000);
+//	_delay_ms(1000);
 	 lcd.setCursor(0,0);
     lcd.printf("2 = %d", TCCR0B);
-	_delay_ms(1000);
+//	_delay_ms(1000);
 	HighSuply counterSupply(&pwmHV, &adc, AnalogToDigital::CH_3);
 	// if(!counterSupply.setVoltage(400, 5, 250))
 	// {
@@ -123,25 +144,71 @@ some_line.attach_function(2, qqq);
 	// }
 
 
-my_menu.add_screen(welcome_screen);
-my_menu.add_screen(some_screen);
+//my_menu.add_screen(welcome_screen);
+//my_menu.add_screen(some_screen);
 
 
 
-	Counter c(&counterSupply, &buzzer, &my_menu);
+	Counter c(&counterSupply, &buzzer);
 	counter = &c;
 	counter->init();
 
-	
+	Buttons buttons(pio, counter);
    // timer16_1.setOutputCompareA(1);
     //uint32_t t=0;
     lcd.setCursor(0,0);
     lcd.printf("T=%d",  counter->getTimer());
 
+    menuSystem.set_focusPosition(Position::RIGHT);
+ //menuSystem.switch_focus();
+ 	workMenu.set_focusSymbol(Position::RIGHT, spaceSymbol);
+ 	workMenu.set_focusSymbol(Position::RIGHT, spaceSymbol);
+
+ 	backLine.attach_function(1, f1);
+	uint32_t t = 0;
+	uint32_t t1 = 0;  
+
     while (1) 
     {
+    	
+		buttons.proc();
+		//buttonTest(buttons, buzzer);
+		if(buttons.getButtonClick(Buttons::BUTTON_LEFT))
+		{
+			 menuSystem.previous_screen();
+			 //menuSystem.switch_focus();
+		}
 
-    	if(buttons.getButtonPress(Buttons::BUTTON_LEFT))
+		if(buttons.getButtonClick(Buttons::BUTTON_RIGHT))
+		{
+			 menuSystem.next_screen();
+			 ///menuSystem.switch_focus();
+		}
+		if(buttons.getButtonClick(Buttons::BUTTON_CENTER))
+		{
+			 menuSystem.call_function(1);
+		}
+		if(buttons.getButtonLongPress(Buttons::BUTTON_LEFT))
+		{
+			 menuSystem.change_menu(workMenu);
+			// menuSystem.switch_focus();
+		}
+		if(buttons.getButtonLongPress(Buttons::BUTTON_RIGHT))
+		{
+			 menuSystem.change_menu(settingsMenu);
+			//
+		}
+		if(buttons.getButtonLongPress(Buttons::BUTTON_CENTER))
+		{
+			//lcd.clear();
+			//lcd.setCursor(0,0);
+		    //lcd.printf("LONG CENT");
+			menuSystem.switch_focus();
+		}
+
+
+
+    /*	if(buttons.getButtonPress(Buttons::BUTTON_LEFT))
     	{
     		my_menu--;
    //  		lcd.clear();
@@ -176,15 +243,30 @@ my_menu.add_screen(some_screen);
     		while(buttons.getButtonPress(Buttons::BUTTON_CENTER));
     		my_menu.update();
     		_delay_ms(10);
+    	}*/
+    	t1++;
+    	gCountSpeed = t1;
+    	if(gCountSpeed / 1000 > 9 && gCountSpeed / 1000 < 10000)
+    	{
+    		gCountSpeed /= 1000;
+    		memset(gCountUnit, 0x33,20);
+    		memcpy(gCountUnit, "mR/h", 4);
     	}
-  //   	if(counter->getTimer() - t > 100)
-  //   	{
-  //   		t = counter->getTimer();    	
+    	if(gCountSpeed / 1000000 > 9 && gCountSpeed / 1000000 < 100000)
+    	{
+    		gCountSpeed /= 1000000;
+    	    memset(gCountUnit, 0x33,20);
+    		memcpy(gCountUnit, " R/h", 4);
+    	}
+     	if(counter->getTimer() - t > 20000)
+     	{
+     		t = counter->getTimer();
+     		menuSystem.update();    	
 		// 	lcd.setCursor(0,0);
-	 //    	lcd.clear();
+	   //  	lcd.clear();
 		// 	lcd.printf("%d %d", counterSupply.getVoltage(), counter->getCountSpeed());
 		// 	_delay_ms(500);
-		// }
+		}
 		// counter->proc();
 		
 
@@ -196,4 +278,61 @@ void qqq(void){
 	lcd.clear();
     	lcd.setCursor(0,0);
 		 lcd.printf("qqqqqqqq");
+}
+
+void f1(void)
+{
+		menuSystem.change_menu(workMenu);
+}
+
+void buttonTest(Buttons & buttons, Buzzer &buzzer)
+{
+	buttons.proc();
+	if(buttons.getButtonLongPress(Buttons::BUTTON_LEFT))
+	{
+		buzzer.on();
+		lcd.clear();
+		lcd.setCursor(0,0);
+	    lcd.printf("LONG LEFT");
+	}
+
+	if(buttons.getButtonLongPress(Buttons::BUTTON_CENTER))
+	{
+		buzzer.on();
+		lcd.clear();
+		lcd.setCursor(0,0);
+	    lcd.printf("LONG CENTER");
+	}
+
+	if(buttons.getButtonLongPress(Buttons::BUTTON_RIGHT))
+	{
+		buzzer.on();
+		lcd.clear();
+		lcd.setCursor(0,0);
+	    lcd.printf("LONG RIGHT");
+	}
+
+	if(buttons.getButtonClick(Buttons::BUTTON_LEFT))
+	{
+		buzzer.on();
+		lcd.clear();
+		lcd.setCursor(0,0);
+	    lcd.printf("CLICK LEFT");
+	}
+
+	if(buttons.getButtonClick(Buttons::BUTTON_CENTER))
+	{
+		buzzer.on();
+		lcd.clear();
+		lcd.setCursor(0,0);
+	    lcd.printf("CLICK CENTER");
+	}
+
+	if(buttons.getButtonClick(Buttons::BUTTON_RIGHT))
+	{
+		buzzer.on();
+		lcd.clear();
+		lcd.setCursor(0,0);
+	    lcd.printf("CLICK RIGHT");
+	}
 }

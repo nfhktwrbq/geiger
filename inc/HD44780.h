@@ -38,8 +38,17 @@ public:
 	virtual void sendCmd(uint8_t cmd);
 	virtual void init(void);
 	virtual void print(char ch);
+	virtual void print(uint8_t val);
+	virtual void print(uint16_t val);
+	virtual void print(uint32_t val);
+	virtual void print(int16_t val);
+	virtual void print(int32_t val);
+	virtual void print(float val);
+	virtual void print(double val);
+
 	virtual void write(char ch);
 	virtual void print(const char * str);
+	virtual void print(char * str);
 	virtual void printf(const char * format, ...);
 	virtual void setCursor(uint8_t col, uint8_t row);
 	virtual void createChar(uint8_t location, uint8_t * chArr);

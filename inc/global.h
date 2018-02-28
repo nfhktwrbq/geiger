@@ -10,10 +10,13 @@
 #define GLOBAL_H_
 
 
-extern uint32_t count;
+extern uint8_t spaceSymbol[8];
 
 #define DEFAULT_COUNTER_VOLTAGE 400
 #define SETTINGS_NUM 10
+
+//Buttons
+#define LONG_PRESS_TIMEOUT 60000;
 
 
 #endif /* GLOBAL_H_ */
