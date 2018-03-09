@@ -21,16 +21,56 @@
 #include "MT10S.h"
 #include "Counter.h"
 #include "Buttons.h"
+#include "Logger.h"
 
+#define RENTGEN_KOEFF 1
+#define SIEVERT_KOEFF (RENTGEN_KOEFF / 100)
 
-#define TEST_PIN 14
+#define STRING_LENGTH 11
+
+const char metricPrefix[] = {'n', 'u', 'm', ' '};
+
+enum UNIT_TYPE
+{
+	NONE,
+	RENTGEN,
+	SIEVERT,
+	COUNTS,
+	NUM_OF_TYPES,
+};
+
+enum EXPO_STATE
+{
+	EXPO_NONE,
+	EXPO_START,
+	EXPO_EXEC,
+};
+
+struct DosePower
+{
+	uint32_t value;
+	char unit[STRING_LENGTH];
+};
 
 void qqq(void);
 void f1(void);
 void buttonTest(Buttons & buttons, Buzzer & buzzer);
+void expoExecute(void);
+void getDosePower(DosePower &dosePower, uint8_t unitType, uint32_t expoCounter, uint32_t expoTime);
+uint8_t getMetricPrefixIndex(uint32_t val);
+void expoProc(void);
+void searchProc(void);
+void buttonsProc(void);
+void proc(void);
+void changeExpoUnitType(void);
+void changeSearchUnitType(void);
 
-uint32_t gCountSpeed = 0;
-char gCountUnit[20] = {" uR/h"};
+char gSearchString[STRING_LENGTH] = "";
+char gExpoString[STRING_LENGTH] = "PUSH ENTER";
+uint8_t gExpoState = EXPO_NONE;
+uint32_t gExpoTime = 10 * Counter::SECOND;
+uint8_t gExpoUnitType = RENTGEN;
+uint8_t gSearchUnitType = SIEVERT;
 
 GPIO * pio = &GPIO::Instance();
 
@@ -40,21 +80,40 @@ MT10S lcd(pio, 16, 17, 18, 19, 23, 24);
 
 Timer8 timer8_0(&TCCR0A, &TCCR0B, &TCNT0, &OCR0A, &OCR0B, &TIMSK0, &TIFR0, &GTCCR, &GTCCR);	
 PulseWidthModulation8 pwmLCDLED(&timer8_0);
+Timer16 timer16_1(&TCCR1A, &TCCR1B, &TCNT1, &OCR1A, &OCR1B, &TIMSK1, &TIFR1, &TCCR1C, &ICR1);
+PulseWidthModulation16 pwmHV(&timer16_1);
 
+Timer8 timer8_2(&TCCR2A, &TCCR2B, &TCNT2, &OCR2A, &OCR2B, &TIMSK2, &TIFR2, &ASSR, &GTCCR);	
+AnalogToDigital adc(AnalogToDigital::AREF,0,AnalogToDigital::PR_128);
+
+Buzzer buzzer(pio);
+Buzzer buzzerStatus(pio);
+
+HighSuply counterSupply(&pwmHV, &adc, AnalogToDigital::CH_3);
+
+Counter c(&counterSupply, &buzzer);
+
+Buttons buttons(pio, &c);
 //--------------work-menu-------------------	
 
-LiquidLine searchLine(1, 0, gCountSpeed, gCountUnit);
+LiquidLine searchLine(0, 0, gSearchString);
 LiquidScreen searchScreen(searchLine);
 
-LiquidLine expositionLine(0, 0, "EXPO");
+LiquidLine expositionLine(0, 0, gExpoString);
 LiquidScreen expositionScreen(expositionLine);
 
 LiquidMenu workMenu(lcd, searchScreen, expositionScreen);
 
 //--------------settings-menu-------------------
 
-LiquidLine lcdLedLine(1, 0, "LCD");
+LiquidLine lcdLedLine(0, 0, "LCD");
 LiquidScreen lcdLedScreen(lcdLedLine);
+
+// LiquidLine expoUnitLine(0, 0, "EUNIT:", gExpoUnitType);
+// LiquidScreen expoUnitScreen(expoUnitLine);
+
+// LiquidLine searchUnitLine(0, 0, "SUNIT:", gSearchUnitType);
+// LiquidScreen searchUnitScreen(searchUnitLine);
 
 LiquidLine buzzerLine(0, 0, "BUZZER");
 LiquidScreen buzzerScreen(buzzerLine);
@@ -74,68 +133,26 @@ LiquidSystem menuSystem(workMenu, settingsMenu);
 	
 int main(void)
 {
-
-	backLine.attach_function(1,f1);
+	logger.setLevel(Logger::DEBUG_2);
 
 	lcd.init();
-	pio->pinMode(11,GPIO::OUTPUT);
-
-	
 
 	timer8_0.setInterrupt(INT_OVERFLOW);
 	pwmLCDLED.initPWM(CO_FAST_PWM_OCnB, WG_FAST_PWM_1, CS_1PR);	
 	pwmLCDLED.setMaxPWMBorder(255);
 	
-	Timer16 timer16_1(&TCCR1A, &TCCR1B, &TCNT1, &OCR1A, &OCR1B, &TIMSK1, &TIFR1, &TCCR1C, &ICR1);
 	timer16_1.setInterrupt(INT_OVERFLOW);	
-	PulseWidthModulation16 pwmHV(&timer16_1);
 	pwmHV.initPWM(CO_FAST_PWM_OCnA, WG_FAST_PWM_9BIT, CS_1PR);
 
 
 	pwmHV.setMaxPWMBorder(80);
 
 	
-	Timer8 timer8_2(&TCCR2A, &TCCR2B, &TCNT2, &OCR2A, &OCR2B, &TIMSK2, &TIFR2, &ASSR, &GTCCR);	
-		
-	AnalogToDigital adc(AnalogToDigital::AREF,0,AnalogToDigital::PR_128);
     adc.setChannel(AnalogToDigital::CH_3);
 	
 	 
-	Buzzer buzzer(pio);
-	Buzzer buzzerStatus(pio);
 	buzzer.enable(true);		
 	
-	//if(!welcome_line.attach_function(1, qqq))
-	//{
-	// 	lcd.clear();
-	// 	lcd.setCursor(0,0);
-	 // 	lcd.printf("FALSE");
-	  //	_delay_ms(1000);
-	// }else
-	// {
-	// 	lcd.clear();
-	//  	lcd.setCursor(0,0);
-	//   	lcd.printf("F=%d",qqq);
-	//   //	_delay_ms(1000);
-	// }
-	// welcome_line.attach_function(2, qqq);
-//some_line.attach_function(1, qqq);
-//some_line.attach_function(2, qqq);
-	/// Instantiating a line with an integer variable.
-	//uint8_t oneTwoThree = 123;
-	//LiquidLine welcome_line2(2, 1, oneTwoThree);
-	//LiquidLine welcome_line3(3, 2, "Third mwnu");
-
-//	_delay_ms(1000);
-	 lcd.setCursor(0,0);
-    lcd.printf("1 = %d", TCCR0A);
-//	_delay_ms(1000);
-
-//	_delay_ms(1000);
-	 lcd.setCursor(0,0);
-    lcd.printf("2 = %d", TCCR0B);
-//	_delay_ms(1000);
-	HighSuply counterSupply(&pwmHV, &adc, AnalogToDigital::CH_3);
 	// if(!counterSupply.setVoltage(400, 5, 250))
 	// {
 	// 	lcd.setCursor(0,0);
@@ -143,133 +160,26 @@ int main(void)
 	// 	while(1);
 	// }
 
-
-//my_menu.add_screen(welcome_screen);
-//my_menu.add_screen(some_screen);
-
-
-
-	Counter c(&counterSupply, &buzzer);
 	counter = &c;
 	counter->init();
 
-	Buttons buttons(pio, counter);
-   // timer16_1.setOutputCompareA(1);
-    //uint32_t t=0;
-    lcd.setCursor(0,0);
-    lcd.printf("T=%d",  counter->getTimer());
 
     menuSystem.set_focusPosition(Position::RIGHT);
- //menuSystem.switch_focus();
  	workMenu.set_focusSymbol(Position::RIGHT, spaceSymbol);
- 	workMenu.set_focusSymbol(Position::RIGHT, spaceSymbol);
+ 	settingsMenu.set_focusSymbol(Position::RIGHT, spaceSymbol);
+ 	//settingsMenu.add_screen(expoUnitScreen);
+ 	// settingsMenu.add_screen(searchUnitScreen);
 
  	backLine.attach_function(1, f1);
-	uint32_t t = 0;
-	uint32_t t1 = 0;  
+	expositionLine.attach_function(1, expoExecute);  
+
+	// expoUnitLine.attach_function(1, changeExpoUnitType);
+	// searchUnitLine.attach_function(1, changeSearchUnitType);
+
 
     while (1) 
     {
-    	
-		buttons.proc();
-		//buttonTest(buttons, buzzer);
-		if(buttons.getButtonClick(Buttons::BUTTON_LEFT))
-		{
-			 menuSystem.previous_screen();
-			 //menuSystem.switch_focus();
-		}
-
-		if(buttons.getButtonClick(Buttons::BUTTON_RIGHT))
-		{
-			 menuSystem.next_screen();
-			 ///menuSystem.switch_focus();
-		}
-		if(buttons.getButtonClick(Buttons::BUTTON_CENTER))
-		{
-			 menuSystem.call_function(1);
-		}
-		if(buttons.getButtonLongPress(Buttons::BUTTON_LEFT))
-		{
-			 menuSystem.change_menu(workMenu);
-			// menuSystem.switch_focus();
-		}
-		if(buttons.getButtonLongPress(Buttons::BUTTON_RIGHT))
-		{
-			 menuSystem.change_menu(settingsMenu);
-			//
-		}
-		if(buttons.getButtonLongPress(Buttons::BUTTON_CENTER))
-		{
-			//lcd.clear();
-			//lcd.setCursor(0,0);
-		    //lcd.printf("LONG CENT");
-			menuSystem.switch_focus();
-		}
-
-
-
-    /*	if(buttons.getButtonPress(Buttons::BUTTON_LEFT))
-    	{
-    		my_menu--;
-   //  		lcd.clear();
-			// lcd.setCursor(0,0);
-		 //    lcd.printf("= %d", OCR0B);
-   //  		pwmLCDLED.changeOn(10);
-    		while(buttons.getButtonPress(Buttons::BUTTON_LEFT));
-    		
-    		_delay_ms(10);
-    	}
-    	if(buttons.getButtonPress(Buttons::BUTTON_RIGHT))
-    	{
-    		my_menu++;
-    	// 	lcd.clear();
-    	// 	lcd.setCursor(0,0);
-		  	// lcd.printf("= %d", OCR0B);
-    	// 	pwmLCDLED.changeOn(-10);
-    	 	while(buttons.getButtonPress(Buttons::BUTTON_RIGHT));
-    		
-    		_delay_ms(10);
-    	}
-    	if(buttons.getButtonPress(Buttons::BUTTON_CENTER))
-    	{
-    		my_menu.switch_focus(0);
-    		if(!my_menu.call_function(1))
-    		{
-	    	 	lcd.clear();
-	    	 	lcd.setCursor(0,0);
-			  	lcd.printf("FALSE");
-	    	}
-    		//pwmLCDLED.changeOn(10);
-    		while(buttons.getButtonPress(Buttons::BUTTON_CENTER));
-    		my_menu.update();
-    		_delay_ms(10);
-    	}*/
-    	t1++;
-    	gCountSpeed = t1;
-    	if(gCountSpeed / 1000 > 9 && gCountSpeed / 1000 < 10000)
-    	{
-    		gCountSpeed /= 1000;
-    		memset(gCountUnit, 0x33,20);
-    		memcpy(gCountUnit, "mR/h", 4);
-    	}
-    	if(gCountSpeed / 1000000 > 9 && gCountSpeed / 1000000 < 100000)
-    	{
-    		gCountSpeed /= 1000000;
-    	    memset(gCountUnit, 0x33,20);
-    		memcpy(gCountUnit, " R/h", 4);
-    	}
-     	if(counter->getTimer() - t > 20000)
-     	{
-     		t = counter->getTimer();
-     		menuSystem.update();    	
-		// 	lcd.setCursor(0,0);
-	   //  	lcd.clear();
-		// 	lcd.printf("%d %d", counterSupply.getVoltage(), counter->getCountSpeed());
-		// 	_delay_ms(500);
-		}
-		// counter->proc();
-		
-
+		proc();
     }
 }
 
@@ -283,6 +193,184 @@ void qqq(void){
 void f1(void)
 {
 		menuSystem.change_menu(workMenu);
+}
+
+void changeExpoUnitType(void)
+{
+	gExpoUnitType++;
+	if(gExpoUnitType > NUM_OF_TYPES)
+	{
+		gExpoUnitType = NONE;
+	}
+}
+
+void changeSearchUnitType(void)
+{
+	gSearchUnitType++;
+	if(gSearchUnitType > NUM_OF_TYPES)
+	{
+		gSearchUnitType = NONE;
+	}
+}
+
+
+void expoExecute(void)
+{
+	gExpoState = EXPO_START;
+	logger.log(Logger::DEBUG_2, "Start expo\n");
+}
+
+void proc(void)
+{
+	static uint32_t t = 0;
+	expoProc();
+	searchProc();
+	buttonsProc();
+	
+ 	if(counter->getTimer() - t > Counter::SECOND )
+ 	{
+ 		t = counter->getTimer();
+ 		menuSystem.update();    	
+		logger.log(Logger::DEBUG, "UPDATE %s\n", gSearchString);
+		logger.log(Logger::DEBUG_2, "Expo state = %u\n", gExpoState);
+	}
+}
+
+void buttonsProc(void)
+{
+	buttons.proc();
+	if(buttons.getButtonClick(Buttons::BUTTON_LEFT))
+	{
+		menuSystem.previous_screen();
+		logger.log(Logger::DEBUG_2, "Left click\n");
+	}
+	if(buttons.getButtonClick(Buttons::BUTTON_RIGHT))
+	{
+		 menuSystem.next_screen();
+		 logger.log(Logger::DEBUG_2, "Right click\n");
+	}
+	if(buttons.getButtonClick(Buttons::BUTTON_CENTER))
+	{
+		 menuSystem.call_function(1);
+		 logger.log(Logger::DEBUG_2, "Center click\n");
+	}
+	if(buttons.getButtonLongPress(Buttons::BUTTON_LEFT))
+	{
+		 menuSystem.change_menu(workMenu);
+		 logger.log(Logger::DEBUG_2, "Left lobg press\n");
+	}
+	if(buttons.getButtonLongPress(Buttons::BUTTON_RIGHT))
+	{
+		 menuSystem.change_menu(settingsMenu);
+		 logger.log(Logger::DEBUG_2, "Right long press\n");
+	}
+	if(buttons.getButtonLongPress(Buttons::BUTTON_CENTER))
+	{
+		 menuSystem.call_function(2);
+		 logger.log(Logger::DEBUG_2, "Center long press\n");
+	}
+}
+
+void searchProc(void)
+{
+	DosePower dosePower;
+	getDosePower(dosePower, gSearchUnitType, counter->getCountSpeed(), Counter::SECOND);
+	memset(gSearchString, 0, STRING_LENGTH);
+	sprintf(gSearchString,"%5lu", dosePower.value);
+	strcat(gSearchString, dosePower.unit);
+}
+
+void expoProc(void)
+{
+	static uint32_t expoTimer = 0;
+	static uint32_t expoCounter = 0;
+	static uint32_t timeGap = 0; 
+	static uint8_t i = 1; 
+	DosePower dosePower;
+	switch(gExpoState)
+	{
+		case EXPO_NONE:
+			getDosePower(dosePower, gExpoUnitType, expoCounter, gExpoTime);
+			memset(gExpoString, 0, STRING_LENGTH);
+			sprintf(gExpoString,"%5lu", dosePower.value);
+			strcat(gExpoString, dosePower.unit);		
+		break;
+		case EXPO_START:
+			expoTimer = counter->getTimer();
+			expoCounter = counter->getCounter();
+			timeGap = gExpoTime / (STRING_LENGTH);
+			memset(gExpoString, 0, STRING_LENGTH);	
+			gExpoState = EXPO_EXEC;
+			i = 1;
+			logger.log(Logger::DEBUG_2, "expoTimer = %lu\n", expoTimer);
+			logger.log(Logger::DEBUG_2, "timeGap = %lu\n", timeGap);
+			logger.log(Logger::DEBUG_2, "Counter = %lu\n", expoCounter);		
+		break;
+		case EXPO_EXEC:
+			if(counter->getTimer() - expoTimer > timeGap * i)
+			{
+				strncat(gExpoString, "*", STRING_LENGTH - strlen(gExpoString));
+				logger.log(Logger::DEBUG_2, "expo proc %u\n", i);
+				i++;			
+			}
+			if(i > (STRING_LENGTH))
+			{
+				expoCounter = counter->getCounter() - expoCounter;
+				gExpoState = EXPO_NONE;
+				logger.log(Logger::DEBUG_2, "expo complete!\n");		
+			}
+		break;
+	}
+}
+
+void getDosePower(DosePower &dosePower, uint8_t unitType, uint32_t expoCounter, uint32_t expoTime)
+{
+	uint32_t dp = expoCounter * Counter::SECOND / expoTime;
+	uint8_t index = 0;
+	memset(dosePower.unit, 0, STRING_LENGTH);
+	strcpy(dosePower.unit, "   /h");
+	switch(unitType)
+	{
+		case RENTGEN:
+			dosePower.unit[2] = 'R';
+			index = 1;
+			dp = (uint32_t)(dp * RENTGEN_KOEFF);
+		break;
+		case SIEVERT:
+			dosePower.unit[2] = 'S';
+			dp = (uint32_t)(dp * 1000 * SIEVERT_KOEFF);
+		break;
+		case COUNTS:
+			dosePower.unit[2] = 'C';
+			dosePower.unit[4] = 's';
+		break;
+		case NONE:
+			memset(dosePower.unit, 0, STRING_LENGTH);
+			sprintf(dosePower.unit, "/%u", (uint16_t)(expoTime / Counter::SECOND) );
+			dosePower.value = expoCounter;
+			return;
+		break;
+	}		
+	index += getMetricPrefixIndex(dp);
+	if(unitType != COUNTS)
+	{
+		dosePower.unit[1] = metricPrefix[index];
+	}
+	dosePower.value = dp;	
+}
+
+uint8_t getMetricPrefixIndex(uint32_t val)
+{
+	uint8_t index = 0;
+	if(val / 1000 > 9 && val / 1000 < 10000)
+	{
+		index = 1;
+	}
+	if(val / 1000000 > 9 && val / 1000000 < 100000)
+	{
+		index = 2;
+	}
+	return index;
 }
 
 void buttonTest(Buttons & buttons, Buzzer &buzzer)

@@ -9,8 +9,10 @@
 #ifndef GLOBAL_H_
 #define GLOBAL_H_
 
+#include "Logger.h"
 
 extern uint8_t spaceSymbol[8];
+extern Logger logger;
 
 #define DEFAULT_COUNTER_VOLTAGE 400
 #define SETTINGS_NUM 10

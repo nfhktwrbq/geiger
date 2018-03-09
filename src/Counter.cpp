@@ -37,12 +37,13 @@ void Counter::proc(void)
 void Counter::procCounter(void)
 {
 	static uint32_t sTimer = 0;	
+	static uint32_t sCounter = 0;
 	
 	if (timer - sTimer > SECOND)
 	{
 		sTimer = timer;
-		countSpeed = counter;
-		counter = 0;
+		countSpeed = counter - sCounter;
+		sCounter = counter;
 	} 
 }
 

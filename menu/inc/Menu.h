@@ -21,12 +21,17 @@ protected:
 private:
 	LiquidSystem * menuSystem;
 	Buttons * buttons;
+	char * searchString;
+	char * expoString;
+	LiquidMenu * workMenu;
+	LiquidMenu * settingsMenu;
 //functions
 public:
-	Menu(LiquidSystem * menuSystem, Buttons * buttons);
+	Menu(Counter * counter, LiquidSystem * menuSystem, LiquidMenu * workMenu, LiquidMenu * settingsMenu, Buttons * buttons);
 	~Menu();
 	void proc();
-	
+	void setExpoString(char * str);
+	void setSearchString(char * str);
 	
 protected:
 private:

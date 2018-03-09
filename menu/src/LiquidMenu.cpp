@@ -206,12 +206,8 @@ void LiquidMenu::update() const {
   softUpdate();
 }
 
-void LiquidMenu::softUpdate() const {
-  for (uint8_t b = 0; b < DIVISION_LINE_LENGTH; b++) {
-  }
-  _p_liquidScreen[_currentScreen]->print(_p_liquidCrystal);
-  for (uint8_t b = 0; b < DIVISION_LINE_LENGTH; b++) {
-  }
+void LiquidMenu::softUpdate() const {  
+  _p_liquidScreen[_currentScreen]->print(_p_liquidCrystal); 
 }
 
 void LiquidMenu::init() const {

@@ -46,6 +46,7 @@ Include file for LiquidMenu library.
 
 #include "LiquidMenu_config.h"
 #include "LiquidMenu_debug.h"
+#include "global.h"
 
 #if I2C
 #include <LiquidCrystal_I2C.h>
@@ -300,6 +301,7 @@ public:
     if (_variableCount < MAX_VARIABLES) {
       _variable[_variableCount] = (void*)&variable;
       _variableType[_variableCount] = recognizeType(variable);
+      logger.log(Logger::DEBUG, "Add variable type %u\n", _variableType[_variableCount]);
       _variableCount++;
       return true;
     }

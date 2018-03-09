@@ -9,6 +9,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include "HD44780.h"
+#include "global.h"
 
 // default constructor
 HD44780::HD44780()
@@ -131,11 +132,13 @@ void HD44780::print(char * str)
 		this->print(* str);
 		str++;		
 	}
+	logger.log(Logger::DEBUG, "HD44780::print(char * str): %s\n", str);
 }
 
 void HD44780::print(const char * str)
 {
 	printf("%s", str);
+	logger.log(Logger::DEBUG, "HD44780::print(const char * str): %s\n", str);
 }
 
 void HD44780::print(uint8_t val)
@@ -179,9 +182,9 @@ void HD44780::printf(const char * format, ...)
 	
 	va_list args;
 	va_start(args, format);
-	vsnprintf(str, MAX_STRING_LEN, format, args);
-	va_end(args);
+	vsnprintf(str, MAX_STRING_LEN, format, args);	
 	print(str);
+	va_end(args);
 }
 
 void HD44780::setCursor(uint8_t col, uint8_t row)
