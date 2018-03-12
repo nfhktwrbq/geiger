@@ -231,7 +231,7 @@ void proc(void)
  	{
  		t = counter->getTimer();
  		menuSystem.update();    	
-		logger.log(Logger::DEBUG, "UPDATE %s\n", gSearchString);
+		logger.log(Logger::DEBUG_1, "UPDATE %s\n", gSearchString);
 		logger.log(Logger::DEBUG_2, "Expo state = %u\n", gExpoState);
 	}
 }

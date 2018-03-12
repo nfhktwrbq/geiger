@@ -120,19 +120,19 @@ void LiquidLine::print_variable(DisplayClass *p_liquidCrystal, uint8_t number) {
 	case DataType::CONST_CHAR_PTR: {
 		const char* variable = reinterpret_cast<const char*>(_variable[number]);
 		p_liquidCrystal->print(variable);
-		logger.log(Logger::DEBUG, "print_variable(const char ptr): %s\n", variable);
+		logger.log(Logger::DEBUG_1, "print_variable(const char ptr): %s\n", variable);
 		break;
 	} //case CONST_CHAR_PTR
 	case DataType::CHAR_PTR: {
 		char* variable = const_cast<char*>(reinterpret_cast<const char *>(_variable[number]));
 		p_liquidCrystal->print(variable);
-		logger.log(Logger::DEBUG, "print_variable(char ptr): %s\n", variable);
-		logger.log(Logger::DEBUG, "char and void ptr: %u %u",variable, _variable[number]);
+		logger.log(Logger::DEBUG_1, "print_variable(char ptr): %s\n", variable);
+		logger.log(Logger::DEBUG_1, "char and void ptr: %u %u",variable, _variable[number]);
 		break;
 	} //case CHAR_PTR
 	case DataType::CHAR: {
 		const char variable = *static_cast<const char*>(_variable[number]);
-		logger.log(Logger::DEBUG, "print_variable(char): %c\n", variable);
+		logger.log(Logger::DEBUG_1, "print_variable(char): %c\n", variable);
 		p_liquidCrystal->print(variable);
 		break;
 	} //case CHAR
@@ -140,60 +140,60 @@ void LiquidLine::print_variable(DisplayClass *p_liquidCrystal, uint8_t number) {
 	case DataType::INT8_T: {
 		const int8_t variable = *static_cast<const int8_t*>(_variable[number]);
 		p_liquidCrystal->print(variable);
-		logger.log(Logger::DEBUG, "print_variable(int8): %d\n", variable);
+		logger.log(Logger::DEBUG_1, "print_variable(int8): %d\n", variable);
 		break;
 	} //case INT8_T
 	case DataType::UINT8_T: {
 		const uint8_t variable = *static_cast<const uint8_t*>(_variable[number]);
 		p_liquidCrystal->print(variable);
-		logger.log(Logger::DEBUG, "print_variable(uint8): %u\n", variable);
+		logger.log(Logger::DEBUG_1, "print_variable(uint8): %u\n", variable);
 		break;
 	} //case UINT8_T
 
 	case DataType::INT16_T: {
 		const int16_t variable = *static_cast<const int16_t*>(_variable[number]);
 		p_liquidCrystal->print(variable);
-		logger.log(Logger::DEBUG, "print_variable(int16): %d\n", variable);
+		logger.log(Logger::DEBUG_1, "print_variable(int16): %d\n", variable);
 		break;
 	} //case INT16_T
 	case DataType::UINT16_T: {
 		const uint16_t variable = *static_cast<const uint16_t*>(_variable[number]);
 		p_liquidCrystal->print(variable);
-		logger.log(Logger::DEBUG, "print_variable(uint16_t): %u\n", variable);
+		logger.log(Logger::DEBUG_1, "print_variable(uint16_t): %u\n", variable);
 		break;
 	} //case UINT16_T
 
 	case DataType::INT32_T: {
 		const int32_t variable = *static_cast<const int32_t*>(_variable[number]);
 		p_liquidCrystal->print(variable);
-		logger.log(Logger::DEBUG, "print_variable(int32_t): %ld\n", variable);
+		logger.log(Logger::DEBUG_1, "print_variable(int32_t): %ld\n", variable);
 		break;
 	} //case INT32_T
 	case DataType::UINT32_T: {
 		const uint32_t variable = *static_cast<const uint32_t*>(_variable[number]);
 		p_liquidCrystal->print(variable);
-		logger.log(Logger::DEBUG, "print_variable(uint32_t): %lu\n", variable);
+		logger.log(Logger::DEBUG_1, "print_variable(uint32_t): %lu\n", variable);
 		break;
 	} //case UINT32_T
 
 	case DataType::FLOAT: {
 		const float variable = *static_cast<const float*>(_variable[number]);
 		p_liquidCrystal->print(variable);
-		logger.log(Logger::DEBUG, "print_variable(float): %f\n", variable);
+		logger.log(Logger::DEBUG_1, "print_variable(float): %f\n", variable);
 		break;
 	} //case FLOAT
 
 	case DataType::BOOL: {
 		const bool variable = *static_cast<const bool*>(_variable[number]);
 		p_liquidCrystal->print(variable);
-		logger.log(Logger::DEBUG, "print_variable(bool): %d\n", variable);
+		logger.log(Logger::DEBUG_1, "print_variable(bool): %d\n", variable);
 		break;
 	} //case BOOL
 
 	case DataType::GLYPH: {
 		const uint8_t variable = *static_cast<const uint8_t*>(_variable[number]);
 		p_liquidCrystal->write((uint8_t)variable);
-		logger.log(Logger::DEBUG, "print_variable(glyph)\n");
+		logger.log(Logger::DEBUG_1, "print_variable(glyph)\n");
 		break;
 	} //case BOOL
 
@@ -206,7 +206,7 @@ void LiquidLine::print_variable(DisplayClass *p_liquidCrystal, uint8_t number) {
 		}
 		buffer[len] = '\0';
 		p_liquidCrystal->print(buffer);
-		logger.log(Logger::DEBUG, "print_variable(PROG_CONST_CHAR_PTR)\n");
+		logger.log(Logger::DEBUG_1, "print_variable(PROG_CONST_CHAR_PTR)\n");
 		break;
 	} //case PROG_CONST_CHAR_PTR
 
@@ -218,10 +218,10 @@ void LiquidLine::print_variable(DisplayClass *p_liquidCrystal, uint8_t number) {
 bool LiquidLine::call_function(uint8_t number) const {
 	if (_function[number - 1]) {
 		(*_function[number - 1])();
-		logger.log(Logger::DEBUG, "Success call %u function\n", number);
+		logger.log(Logger::DEBUG_1, "Success call %u function\n", number);
 		return true;
 	} else {
-		logger.log(Logger::DEBUG, "Fail call %u function\n", number);
+		logger.log(Logger::DEBUG_1, "Fail call %u function\n", number);
 		return false;
 	}
 }

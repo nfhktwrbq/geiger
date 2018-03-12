@@ -13,7 +13,7 @@ public:
 		CRITICAL = 0x01,
 		INFO = 0x02,
 		WARNING = 0x04,
-		DEBUG = 0x08,
+		DEBUG_1 = 0x08,
 		DEBUG_2 = 0x10,
 	};
 private:

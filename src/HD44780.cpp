@@ -132,13 +132,13 @@ void HD44780::print(char * str)
 		this->print(* str);
 		str++;		
 	}
-	logger.log(Logger::DEBUG, "HD44780::print(char * str): %s\n", str);
+	logger.log(Logger::DEBUG_1, "HD44780::print(char * str): %s\n", str);
 }
 
 void HD44780::print(const char * str)
 {
 	printf("%s", str);
-	logger.log(Logger::DEBUG, "HD44780::print(const char * str): %s\n", str);
+	logger.log(Logger::DEBUG_1, "HD44780::print(const char * str): %s\n", str);
 }
 
 void HD44780::print(uint8_t val)

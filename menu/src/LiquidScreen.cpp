@@ -89,7 +89,7 @@ void LiquidScreen::print(DisplayClass *p_liquidCrystal) const {
 			focus = false;
 		} else {
 		}
-		logger.log(Logger::DEBUG, "LiquidScreen print:\n");
+		logger.log(Logger::DEBUG_1, "LiquidScreen print:\n");
 		_p_liquidLine[l]->print(p_liquidCrystal, focus);
 	}
 }

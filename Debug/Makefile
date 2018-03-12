@@ -47,6 +47,7 @@ C_SRCS +=  \
 ../menu/src/LiquidMenu.cpp \
 ../menu/src/LiquidScreen.cpp \
 ../menu/src/LiquidSystem.cpp \
+../menu/src/Menu.cpp \
 ../menu/src/recognizeType.cpp \
 ../src/AnalogToDigital.cpp \
 ../src/Buttons.cpp \
@@ -55,6 +56,7 @@ C_SRCS +=  \
 ../src/GPIO.cpp \
 ../src/HD44780.cpp \
 ../src/HighSuply.cpp \
+../src/Logger.cpp \
 ../src/MT10S.cpp \
 ../src/Settings.cpp
 
@@ -71,6 +73,7 @@ menu/src/LiquidLine.o \
 menu/src/LiquidMenu.o \
 menu/src/LiquidScreen.o \
 menu/src/LiquidSystem.o \
+menu/src/Menu.o \
 menu/src/recognizeType.o \
 src/AnalogToDigital.o \
 src/Buttons.o \
@@ -79,6 +82,7 @@ src/Counter.o \
 src/GPIO.o \
 src/HD44780.o \
 src/HighSuply.o \
+src/Logger.o \
 src/MT10S.o \
 src/Settings.o
 
@@ -88,6 +92,7 @@ menu/src/LiquidLine.o \
 menu/src/LiquidMenu.o \
 menu/src/LiquidScreen.o \
 menu/src/LiquidSystem.o \
+menu/src/Menu.o \
 menu/src/recognizeType.o \
 src/AnalogToDigital.o \
 src/Buttons.o \
@@ -96,6 +101,7 @@ src/Counter.o \
 src/GPIO.o \
 src/HD44780.o \
 src/HighSuply.o \
+src/Logger.o \
 src/MT10S.o \
 src/Settings.o
 
@@ -105,6 +111,7 @@ menu/src/LiquidLine.d \
 menu/src/LiquidMenu.d \
 menu/src/LiquidScreen.d \
 menu/src/LiquidSystem.d \
+menu/src/Menu.d \
 menu/src/recognizeType.d \
 src/AnalogToDigital.d \
 src/Buttons.d \
@@ -113,6 +120,7 @@ src/Counter.d \
 src/GPIO.d \
 src/HD44780.d \
 src/HighSuply.d \
+src/Logger.d \
 src/MT10S.d \
 src/Settings.d
 
@@ -122,6 +130,7 @@ menu/src/LiquidLine.d \
 menu/src/LiquidMenu.d \
 menu/src/LiquidScreen.d \
 menu/src/LiquidSystem.d \
+menu/src/Menu.d \
 menu/src/recognizeType.d \
 src/AnalogToDigital.d \
 src/Buttons.d \
@@ -130,6 +139,7 @@ src/Counter.d \
 src/GPIO.d \
 src/HD44780.d \
 src/HighSuply.d \
+src/Logger.d \
 src/MT10S.d \
 src/Settings.d
 
@@ -147,6 +157,10 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
+
+
+
+
 
 
 

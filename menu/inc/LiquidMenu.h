@@ -301,7 +301,7 @@ public:
     if (_variableCount < MAX_VARIABLES) {
       _variable[_variableCount] = (void*)&variable;
       _variableType[_variableCount] = recognizeType(variable);
-      logger.log(Logger::DEBUG, "Add variable type %u\n", _variableType[_variableCount]);
+      logger.log(Logger::DEBUG_1, "Add variable type %u\n", _variableType[_variableCount]);
       _variableCount++;
       return true;
     }
