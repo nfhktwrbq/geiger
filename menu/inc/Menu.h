@@ -9,7 +9,6 @@
 #ifndef __MENU_H__
 #define __MENU_H__
 
-#include "LiquidMenu.h"
 #include "Buttons.h"
 
 class Menu
@@ -19,15 +18,14 @@ public:
 	
 protected:
 private:
-	LiquidSystem * menuSystem;
+	
 	Buttons * buttons;
 	char * searchString;
 	char * expoString;
-	LiquidMenu * workMenu;
-	LiquidMenu * settingsMenu;
+
 //functions
 public:
-	Menu(Counter * counter, LiquidSystem * menuSystem, LiquidMenu * workMenu, LiquidMenu * settingsMenu, Buttons * buttons);
+	Menu(Counter * counter, Buttons * buttons);
 	~Menu();
 	void proc();
 	void setExpoString(char * str);

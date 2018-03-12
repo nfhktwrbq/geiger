@@ -7,6 +7,7 @@
 
 #include <util/delay.h>
 #include <inttypes.h>
+#include <stdio.h>
 
 #include "GPIO.h"
 #include "Timer.h"
@@ -17,7 +18,6 @@
 #include "global.h"
 #include "PulseWidthModulation.h"
 #include "HighSuply.h"
-#include "LiquidMenu.h"
 #include "MT10S.h"
 #include "Counter.h"
 #include "Buttons.h"
@@ -95,41 +95,6 @@ Counter c(&counterSupply, &buzzer);
 
 Buttons buttons(pio, &c);
 //--------------work-menu-------------------	
-
-LiquidLine searchLine(0, 0, gSearchString);
-LiquidScreen searchScreen(searchLine);
-
-LiquidLine expositionLine(0, 0, gExpoString);
-LiquidScreen expositionScreen(expositionLine);
-
-LiquidMenu workMenu(lcd, searchScreen, expositionScreen);
-
-//--------------settings-menu-------------------
-
-LiquidLine lcdLedLine(0, 0, "LCD");
-LiquidScreen lcdLedScreen(lcdLedLine);
-
-// LiquidLine expoUnitLine(0, 0, "EUNIT:", gExpoUnitType);
-// LiquidScreen expoUnitScreen(expoUnitLine);
-
-// LiquidLine searchUnitLine(0, 0, "SUNIT:", gSearchUnitType);
-// LiquidScreen searchUnitScreen(searchUnitLine);
-
-LiquidLine buzzerLine(0, 0, "BUZZER");
-LiquidScreen buzzerScreen(buzzerLine);
-
-LiquidLine backLine(0, 0, "BACK");
-//LiquidLine backLine2(0, 0, "BACK2");
-//LiquidLine backLine3(0, 0, "BACK3");
-LiquidScreen backScreen(backLine);
-
-LiquidMenu settingsMenu(lcd, lcdLedScreen, buzzerScreen, backScreen);
-
-
-
-LiquidSystem menuSystem(workMenu, settingsMenu);	
-
-
 	
 int main(void)
 {
@@ -164,19 +129,7 @@ int main(void)
 	counter->init();
 
 
-    menuSystem.set_focusPosition(Position::RIGHT);
- 	workMenu.set_focusSymbol(Position::RIGHT, spaceSymbol);
- 	settingsMenu.set_focusSymbol(Position::RIGHT, spaceSymbol);
- 	//settingsMenu.add_screen(expoUnitScreen);
- 	// settingsMenu.add_screen(searchUnitScreen);
-
- 	backLine.attach_function(1, f1);
-	expositionLine.attach_function(1, expoExecute);  
-
-	// expoUnitLine.attach_function(1, changeExpoUnitType);
-	// searchUnitLine.attach_function(1, changeSearchUnitType);
-
-
+    
     while (1) 
     {
 		proc();
@@ -192,7 +145,7 @@ void qqq(void){
 
 void f1(void)
 {
-		menuSystem.change_menu(workMenu);
+		
 }
 
 void changeExpoUnitType(void)
@@ -229,8 +182,7 @@ void proc(void)
 	
  	if(counter->getTimer() - t > Counter::SECOND )
  	{
- 		t = counter->getTimer();
- 		menuSystem.update();    	
+ 		t = counter->getTimer(); 		
 		logger.log(Logger::DEBUG_1, "UPDATE %s\n", gSearchString);
 		logger.log(Logger::DEBUG_2, "Expo state = %u\n", gExpoState);
 	}
@@ -240,33 +192,27 @@ void buttonsProc(void)
 {
 	buttons.proc();
 	if(buttons.getButtonClick(Buttons::BUTTON_LEFT))
-	{
-		menuSystem.previous_screen();
+	{		
 		logger.log(Logger::DEBUG_2, "Left click\n");
 	}
 	if(buttons.getButtonClick(Buttons::BUTTON_RIGHT))
 	{
-		 menuSystem.next_screen();
 		 logger.log(Logger::DEBUG_2, "Right click\n");
 	}
 	if(buttons.getButtonClick(Buttons::BUTTON_CENTER))
-	{
-		 menuSystem.call_function(1);
+	{		
 		 logger.log(Logger::DEBUG_2, "Center click\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_LEFT))
-	{
-		 menuSystem.change_menu(workMenu);
+	{		
 		 logger.log(Logger::DEBUG_2, "Left lobg press\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_RIGHT))
-	{
-		 menuSystem.change_menu(settingsMenu);
+	{		
 		 logger.log(Logger::DEBUG_2, "Right long press\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_CENTER))
-	{
-		 menuSystem.call_function(2);
+	{		
 		 logger.log(Logger::DEBUG_2, "Center long press\n");
 	}
 }

@@ -43,12 +43,7 @@ SUBDIRS :=  \
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
 ../main.cpp \
-../menu/src/LiquidLine.cpp \
-../menu/src/LiquidMenu.cpp \
-../menu/src/LiquidScreen.cpp \
-../menu/src/LiquidSystem.cpp \
 ../menu/src/Menu.cpp \
-../menu/src/recognizeType.cpp \
 ../src/AnalogToDigital.cpp \
 ../src/Buttons.cpp \
 ../src/Buzzer.cpp \
@@ -69,12 +64,7 @@ ASM_SRCS +=
 
 OBJS +=  \
 main.o \
-menu/src/LiquidLine.o \
-menu/src/LiquidMenu.o \
-menu/src/LiquidScreen.o \
-menu/src/LiquidSystem.o \
 menu/src/Menu.o \
-menu/src/recognizeType.o \
 src/AnalogToDigital.o \
 src/Buttons.o \
 src/Buzzer.o \
@@ -88,12 +78,7 @@ src/Settings.o
 
 OBJS_AS_ARGS +=  \
 main.o \
-menu/src/LiquidLine.o \
-menu/src/LiquidMenu.o \
-menu/src/LiquidScreen.o \
-menu/src/LiquidSystem.o \
 menu/src/Menu.o \
-menu/src/recognizeType.o \
 src/AnalogToDigital.o \
 src/Buttons.o \
 src/Buzzer.o \
@@ -107,12 +92,7 @@ src/Settings.o
 
 C_DEPS +=  \
 main.d \
-menu/src/LiquidLine.d \
-menu/src/LiquidMenu.d \
-menu/src/LiquidScreen.d \
-menu/src/LiquidSystem.d \
 menu/src/Menu.d \
-menu/src/recognizeType.d \
 src/AnalogToDigital.d \
 src/Buttons.d \
 src/Buzzer.d \
@@ -126,12 +106,7 @@ src/Settings.d
 
 C_DEPS_AS_ARGS +=  \
 main.d \
-menu/src/LiquidLine.d \
-menu/src/LiquidMenu.d \
-menu/src/LiquidScreen.d \
-menu/src/LiquidSystem.d \
 menu/src/Menu.d \
-menu/src/recognizeType.d \
 src/AnalogToDigital.d \
 src/Buttons.d \
 src/Buzzer.d \
@@ -157,16 +132,6 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
-
-
-
-
-
-
-
-
-
-
 
 
 
