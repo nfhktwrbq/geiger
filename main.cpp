@@ -94,46 +94,44 @@ HighSuply counterSupply(&pwmHV, &adc, AnalogToDigital::CH_3);
 Counter c(&counterSupply, &buzzer);
 
 Buttons buttons(pio, &c);
-//--------------work-menu-------------------	
+//--------------work-screen-------------------	
 
-/*LiquidLine searchLine(0, 0, gSearchString);
-LiquidScreen searchScreen(searchLine);
+LiquidLine searchLine(0, 0, gSearchString);
+LiquidLine expositionLine(0, 1, gExpoString);
 
-LiquidLine expositionLine(0, 0, gExpoString);
-LiquidScreen expositionScreen(expositionLine);
+LiquidScreen workScreen(searchLine, expositionLine);
 
-LiquidMenu workMenu(lcd, searchScreen, expositionScreen);
 
 //--------------settings-menu-------------------
 
 LiquidLine lcdLedLine(0, 0, "LCD");
-LiquidScreen lcdLedScreen(lcdLedLine);
+
 
  LiquidLine expoUnitLine(0, 0, "EUNIT:", gExpoUnitType);
- LiquidScreen expoUnitScreen(expoUnitLine);
+
 
  LiquidLine searchUnitLine(0, 0, "SUNIT:", gSearchUnitType);
- LiquidScreen searchUnitScreen(searchUnitLine);
+
 
 LiquidLine buzzerLine(0, 0, "BUZZER");
-LiquidScreen buzzerScreen(buzzerLine);
+
 
 LiquidLine backLine(0, 0, "BACK");
-//LiquidLine backLine2(0, 0, "BACK2");
-//LiquidLine backLine3(0, 0, "BACK3");
-LiquidScreen backScreen(backLine);
-
-LiquidMenu settingsMenu(lcd, lcdLedScreen, buzzerScreen, backScreen);
 
 
 
-LiquidSystem menuSystem(workMenu, settingsMenu);	*/
+LiquidScreen settingsScreen(lcdLedLine, expoUnitLine, searchUnitLine, buzzerLine);
+
+
+
+LiquidMenu menu(lcd, workScreen, settingsScreen);	
 
 
 	
 int main(void)
 {
-	logger.setLevel(Logger::DEBUG_2);
+	settingsScreen.add_line(backLine);
+	logger.setLevel(Logger::CLEAR);
 
 	lcd.init();
 
@@ -164,17 +162,14 @@ int main(void)
 	counter->init();
 
 
-    /*menuSystem.set_focusPosition(Position::RIGHT);
- 	workMenu.set_focusSymbol(Position::RIGHT, spaceSymbol);
- 	settingsMenu.set_focusSymbol(Position::RIGHT, spaceSymbol);
- 	settingsMenu.add_screen(expoUnitScreen);
- 	settingsMenu.add_screen(searchUnitScreen);
+    menu.set_focusPosition(Position::RIGHT);
+ 	menu.set_focusSymbol(Position::RIGHT, spaceSymbol);	
 
  	backLine.attach_function(1, f1);
-	expositionLine.attach_function(1, expoExecute); */ 
+	expositionLine.attach_function(1, expoExecute);  
 
-	// expoUnitLine.attach_function(1, changeExpoUnitType);
-	// searchUnitLine.attach_function(1, changeSearchUnitType);
+	 expoUnitLine.attach_function(1, changeExpoUnitType);
+	 searchUnitLine.attach_function(1, changeSearchUnitType);
 
 
     while (1) 
@@ -187,12 +182,12 @@ void qqq(void){
 	pwmLCDLED.changeOn(10);
 	lcd.clear();
     	lcd.setCursor(0,0);
-		 lcd.printf("qqqqqqqq");
+		// lcd.printf("qqqqqqqq");
 }
 
 void f1(void)
 {
-		//menuSystem.change_menu(workMenu);
+		menu++;
 }
 
 void changeExpoUnitType(void)
@@ -217,7 +212,7 @@ void changeSearchUnitType(void)
 void expoExecute(void)
 {
 	gExpoState = EXPO_START;
-	logger.log(Logger::DEBUG_2, "Start expo\n");
+	//logger.log(Logger::DEBUG_2, "Start expo\n");
 }
 
 void proc(void)
@@ -230,9 +225,9 @@ void proc(void)
  	if(counter->getTimer() - t > Counter::SECOND )
  	{
  		t = counter->getTimer();
- 		//menuSystem.update();    	
-		logger.log(Logger::DEBUG_1, "UPDATE %s\n", gSearchString);
-		logger.log(Logger::DEBUG_2, "Expo state = %u\n", gExpoState);
+ 		menu.update();    	
+		//logger.log(Logger::DEBUG_1, "UPDATE %s\n", gSearchString);
+		//logger.log(Logger::DEBUG_2, "Expo state = %u\n", gExpoState);
 	}
 }
 
@@ -241,33 +236,33 @@ void buttonsProc(void)
 	buttons.proc();
 	if(buttons.getButtonClick(Buttons::BUTTON_LEFT))
 	{
-		//menuSystem.previous_screen();
-		logger.log(Logger::DEBUG_2, "Left click\n");
+		menu.switch_focus(true);
+		//logger.log(Logger::DEBUG_2, "Left click\n");
 	}
 	if(buttons.getButtonClick(Buttons::BUTTON_RIGHT))
 	{
-		// menuSystem.next_screen();
-		 logger.log(Logger::DEBUG_2, "Right click\n");
+		 menu.switch_focus(false);
+		 //logger.log(Logger::DEBUG_2, "Right click\n");
 	}
 	if(buttons.getButtonClick(Buttons::BUTTON_CENTER))
 	{
-		// menuSystem.call_function(1);
-		 logger.log(Logger::DEBUG_2, "Center click\n");
+		 menu.call_function(1);
+		 //logger.log(Logger::DEBUG_2, "Center click\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_LEFT))
 	{
-		// menuSystem.change_menu(workMenu);
-		 logger.log(Logger::DEBUG_2, "Left lobg press\n");
+		 menu.previous_screen();
+		 //logger.log(Logger::DEBUG_2, "Left lobg press\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_RIGHT))
 	{
-		// menuSystem.change_menu(settingsMenu);
-		 logger.log(Logger::DEBUG_2, "Right long press\n");
+		 menu.next_screen();
+		 //logger.log(Logger::DEBUG_2, "Right long press\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_CENTER))
 	{
-		// menuSystem.call_function(2);
-		 logger.log(Logger::DEBUG_2, "Center long press\n");
+		 menu.call_function(2);
+		 //logger.log(Logger::DEBUG_2, "Center long press\n");
 	}
 }
 
@@ -302,9 +297,9 @@ void expoProc(void)
 			memset(gExpoString, 0, STRING_LENGTH);	
 			gExpoState = EXPO_EXEC;
 			i = 1;
-			logger.log(Logger::DEBUG_2, "expoTimer = %lu\n", expoTimer);
-			logger.log(Logger::DEBUG_2, "timeGap = %lu\n", timeGap);
-			logger.log(Logger::DEBUG_2, "Counter = %lu\n", expoCounter);		
+			//logger.log(Logger::DEBUG_2, "expoTimer = %lu\n", expoTimer);
+			///logger.log(Logger::DEBUG_2, "timeGap = %lu\n", timeGap);
+			//logger.log(Logger::DEBUG_2, "Counter = %lu\n", expoCounter);		
 		break;
 		case EXPO_EXEC:
 			if(counter->getTimer() - expoTimer > timeGap * i)
@@ -317,7 +312,7 @@ void expoProc(void)
 			{
 				expoCounter = counter->getCounter() - expoCounter;
 				gExpoState = EXPO_NONE;
-				logger.log(Logger::DEBUG_2, "expo complete!\n");		
+				//logger.log(Logger::DEBUG_2, "expo complete!\n");		
 			}
 		break;
 	}
