@@ -202,6 +202,7 @@ bool LiquidMenu::call_function(uint8_t number) const {
 }
 
 void LiquidMenu::update() const {
+  logger.log(Logger::DEBUG_3, "Update\n");
   _p_liquidCrystal->clear();
   softUpdate();
 }

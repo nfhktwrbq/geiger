@@ -74,8 +74,8 @@ uint8_t gSearchUnitType = SIEVERT;
 
 GPIO * pio = &GPIO::Instance();
 
-MT10S lcd(pio, 16, 17, 18, 19, 23, 24);
-
+//MT10S lcd(pio, 16, 17, 18, 19, 23, 24);
+HD44780 lcd(pio, 16, 17, 18, 19, 23, 24);
 
 
 Timer8 timer8_0(&TCCR0A, &TCCR0B, &TCNT0, &OCR0A, &OCR0B, &TIMSK0, &TIFR0, &GTCCR, &GTCCR);	
@@ -107,16 +107,16 @@ LiquidScreen workScreen(searchLine, expositionLine);
 LiquidLine lcdLedLine(0, 0, "LCD");
 
 
- LiquidLine expoUnitLine(0, 0, "EUNIT:", gExpoUnitType);
+ LiquidLine expoUnitLine(0, 1, "EUNIT:", gExpoUnitType);
 
 
- LiquidLine searchUnitLine(0, 0, "SUNIT:", gSearchUnitType);
+ LiquidLine searchUnitLine(0, 2, "SUNIT:", gSearchUnitType);
 
 
-LiquidLine buzzerLine(0, 0, "BUZZER");
+LiquidLine buzzerLine(0, 3, "BUZZER");
 
 
-LiquidLine backLine(0, 0, "BACK");
+LiquidLine backLine(0, 4, "BACK");
 
 
 
@@ -131,7 +131,7 @@ LiquidMenu menu(lcd, workScreen, settingsScreen);
 int main(void)
 {
 	settingsScreen.add_line(backLine);
-	logger.setLevel(Logger::CLEAR);
+	logger.setLevel(Logger::DEBUG_3);
 
 	lcd.init();
 
@@ -237,32 +237,32 @@ void buttonsProc(void)
 	if(buttons.getButtonClick(Buttons::BUTTON_LEFT))
 	{
 		menu.switch_focus(true);
-		//logger.log(Logger::DEBUG_2, "Left click\n");
+		logger.log(Logger::DEBUG_3, "Left click\n");
 	}
 	if(buttons.getButtonClick(Buttons::BUTTON_RIGHT))
 	{
 		 menu.switch_focus(false);
-		 //logger.log(Logger::DEBUG_2, "Right click\n");
+		 logger.log(Logger::DEBUG_3, "Right click\n");
 	}
 	if(buttons.getButtonClick(Buttons::BUTTON_CENTER))
 	{
 		 menu.call_function(1);
-		 //logger.log(Logger::DEBUG_2, "Center click\n");
+		 logger.log(Logger::DEBUG_3, "Center click\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_LEFT))
 	{
 		 menu.previous_screen();
-		 //logger.log(Logger::DEBUG_2, "Left lobg press\n");
+		 logger.log(Logger::DEBUG_3, "Left lobg press\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_RIGHT))
 	{
 		 menu.next_screen();
-		 //logger.log(Logger::DEBUG_2, "Right long press\n");
+		 logger.log(Logger::DEBUG_3, "Right long press\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_CENTER))
 	{
 		 menu.call_function(2);
-		 //logger.log(Logger::DEBUG_2, "Center long press\n");
+		 logger.log(Logger::DEBUG_3, "Center long press\n");
 	}
 }
 

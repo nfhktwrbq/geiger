@@ -83,7 +83,7 @@ void LiquidScreen::hide(bool hide) {
 }
 
 void LiquidScreen::print(DisplayClass *p_liquidCrystal){
-	if(_focus  > (_offset + LINES_PER_SCREEN))
+	if(_focus  >= (_offset + LINES_PER_SCREEN))
 	{
 		_offset++;
 	}	
@@ -91,13 +91,15 @@ void LiquidScreen::print(DisplayClass *p_liquidCrystal){
 	{
 		_offset--;
 	}
+	logger.log(Logger::DEBUG_3, "Offset = %u, focus = %u\n", _offset, _focus);
+
 	for (uint8_t l = 0; l < _lineCount; l++) {
 		bool focus = true;
 		if (_focus != l) {
 			focus = false;
 		} else {
 		}
-		logger.log(Logger::DEBUG_1, "LiquidScreen print:\n");
+		logger.log(Logger::DEBUG_3, "LiquidScreen print:\n");
 		_p_liquidLine[l]->print(p_liquidCrystal, focus, _offset);
 	}
 }
@@ -106,17 +108,17 @@ void LiquidScreen::switch_focus(bool forward) {
 	print_me((uintptr_t)this);
 	do {
 		if (forward) {
-			if (_focus < _lineCount) {
+			if (_focus < _lineCount - 1) {
 				_focus++;
 				if (_focus == _lineCount) {
 					break;
 				}
 			} else {
-				_focus = 0;
+				//_focus = 0;
 			}
 		} else { //else (forward)
 			if (_focus == 0) {
-				_focus = _lineCount;
+				//_focus = _lineCount;
 				break;
 			} else {
 				_focus--;
@@ -135,4 +137,5 @@ bool LiquidScreen::call_function(uint8_t number) const {
 void LiquidScreen::set_focus(uint8_t focus)
 {
 	_focus = focus;
+	logger.log(Logger::DEBUG_1, "LiquidScreen print:\n");
 }

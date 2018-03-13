@@ -15,6 +15,9 @@ public:
 		WARNING = 0x04,
 		DEBUG_1 = 0x08,
 		DEBUG_2 = 0x10,
+		DEBUG_3 = 0x20,
+		DEBUG_4 = 0x40,
+		DEBUG_5 = 0x80,
 	};
 private:
 	const static size_t MAX_STRING_LEN = 200;

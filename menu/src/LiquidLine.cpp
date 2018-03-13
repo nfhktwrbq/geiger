@@ -82,9 +82,12 @@ bool LiquidLine::set_asProgmem(uint8_t number) {
 }
 
 void LiquidLine::print(DisplayClass *p_liquidCrystal, bool isFocused, uint8_t offset) {
-	p_liquidCrystal->setCursor(_column, _row + offset);
-	if(_row + offset < LINES_PER_SCREEN)
+	
+	if((_row - offset) >= 0 &&  (_row - offset) < LINES_PER_SCREEN)
 	{
+		p_liquidCrystal->setCursor(_column, _row - offset);
+		logger.log(Logger::DEBUG_3, "rows = %u\n", _row + offset);
+
 		for (uint8_t v = 0; v < MAX_VARIABLES; v++) {
 			print_variable(p_liquidCrystal, v);
 		}
@@ -95,12 +98,12 @@ void LiquidLine::print(DisplayClass *p_liquidCrystal, bool isFocused, uint8_t of
 				break;
 			} //case RIGHT
 			case Position::LEFT: {
-				p_liquidCrystal->setCursor(_column - 1, _row);
+				p_liquidCrystal->setCursor(_column - 1, _row - offset);
 				p_liquidCrystal->write((uint8_t)14);
 				break;
 			} //case LEFT
 			case Position::CUSTOM: {
-				p_liquidCrystal->setCursor(_focusColumn, _focusRow);
+				p_liquidCrystal->setCursor(_focusColumn, _focusRow - offset);
 				p_liquidCrystal->write((uint8_t)13);
 				break;
 			} //case CUSTOM
