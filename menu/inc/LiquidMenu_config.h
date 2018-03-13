@@ -20,6 +20,8 @@ const uint8_t MAX_FUNCTIONS = 8; ///< @note Default: 8
 /// Configures the number of available lines per screen.
 const uint8_t MAX_LINES = 12; ///< @note Default: 12
 
+const uint8_t LINES_PER_SCREEN = 12; ///< @note Default: 12
+
 /// Configures the number of available screens per menu.
 const uint8_t MAX_SCREENS = 14; ///< @note Default: 14
 

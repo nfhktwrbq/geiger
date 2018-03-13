@@ -81,36 +81,38 @@ bool LiquidLine::set_asProgmem(uint8_t number) {
 	}
 }
 
-void LiquidLine::print(DisplayClass *p_liquidCrystal, bool isFocused) {
-	p_liquidCrystal->setCursor(_column, _row);
-	for (uint8_t v = 0; v < MAX_VARIABLES; v++) {
-		print_variable(p_liquidCrystal, v);
-	}
-
-	if (isFocused) {
-		switch (_focusPosition) {
-		case Position::RIGHT: {
-			p_liquidCrystal->write((uint8_t)15);
-			break;
-		} //case RIGHT
-		case Position::LEFT: {
-			p_liquidCrystal->setCursor(_column - 1, _row);
-			p_liquidCrystal->write((uint8_t)14);
-			break;
-		} //case LEFT
-		case Position::CUSTOM: {
-			p_liquidCrystal->setCursor(_focusColumn, _focusRow);
-			p_liquidCrystal->write((uint8_t)13);
-			break;
-		} //case CUSTOM
-		default: {
-			_focusPosition = Position::NORMAL;
-			p_liquidCrystal->write((uint8_t)15);
-			break;
-		} //default
-		} //switch (_focusPosition)
-	} else {
-		//p_liquidCrystal->print(NOTHING);
+void LiquidLine::print(DisplayClass *p_liquidCrystal, bool isFocused, uint8_t offset) {
+	p_liquidCrystal->setCursor(_column, _row + offset);
+	if(_row + offset < LINES_PER_SCREEN)
+	{
+		for (uint8_t v = 0; v < MAX_VARIABLES; v++) {
+			print_variable(p_liquidCrystal, v);
+		}
+		if (isFocused) {
+			switch (_focusPosition) {
+			case Position::RIGHT: {
+				p_liquidCrystal->write((uint8_t)15);
+				break;
+			} //case RIGHT
+			case Position::LEFT: {
+				p_liquidCrystal->setCursor(_column - 1, _row);
+				p_liquidCrystal->write((uint8_t)14);
+				break;
+			} //case LEFT
+			case Position::CUSTOM: {
+				p_liquidCrystal->setCursor(_focusColumn, _focusRow);
+				p_liquidCrystal->write((uint8_t)13);
+				break;
+			} //case CUSTOM
+			default: {
+				_focusPosition = Position::NORMAL;
+				p_liquidCrystal->write((uint8_t)15);
+				break;
+			} //default
+			} //switch (_focusPosition)
+		} else {
+			//p_liquidCrystal->print(NOTHING);
+		}
 	}
 }
 
@@ -225,3 +227,4 @@ bool LiquidLine::call_function(uint8_t number) const {
 		return false;
 	}
 }
+

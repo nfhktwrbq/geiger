@@ -30,7 +30,7 @@ SOFTWARE.
 #include "LiquidMenu.h"
 
 LiquidScreen::LiquidScreen()
-	: _lineCount(0), _focus(0), _hidden(false) {}
+	: _lineCount(0), _focus(0), _hidden(false), _offset(0) {}
 
 LiquidScreen::LiquidScreen(LiquidLine &liquidLine)
 	: LiquidScreen() {
@@ -82,7 +82,15 @@ void LiquidScreen::hide(bool hide) {
 	_hidden = hide;
 }
 
-void LiquidScreen::print(DisplayClass *p_liquidCrystal) const {
+void LiquidScreen::print(DisplayClass *p_liquidCrystal){
+	if(_focus  > (_offset + LINES_PER_SCREEN))
+	{
+		_offset++;
+	}	
+	if(_focus < _offset)
+	{
+		_offset--;
+	}
 	for (uint8_t l = 0; l < _lineCount; l++) {
 		bool focus = true;
 		if (_focus != l) {
@@ -90,7 +98,7 @@ void LiquidScreen::print(DisplayClass *p_liquidCrystal) const {
 		} else {
 		}
 		logger.log(Logger::DEBUG_1, "LiquidScreen print:\n");
-		_p_liquidLine[l]->print(p_liquidCrystal, focus);
+		_p_liquidLine[l]->print(p_liquidCrystal, focus, _offset);
 	}
 }
 

@@ -210,7 +210,7 @@ public:
   LiquidLine(uint8_t column, uint8_t row)
     : _row(row), _column(column), _focusRow(row - 1),
       _focusColumn(column - 1), _focusPosition(Position::NORMAL),
-      _variableCount(0), _focusable(false) {
+      _variableCount(0), _focusable(false){
     for (uint8_t i = 0; i < MAX_VARIABLES; i++) {
       _variable[i] = nullptr;
       _variableType[i] = DataType::NOT_USED;
@@ -383,7 +383,7 @@ private:
   @param *p_liquidCrystal - pointer to the DisplayClass object
   @param isFocused - true if this line is focused
   */
-  void print(DisplayClass *p_liquidCrystal, bool isFocused);
+  void print(DisplayClass *p_liquidCrystal, bool isFocused, uint8_t offset);
 
   /// Prints a variable to the display.
   /**
@@ -405,6 +405,9 @@ private:
   @see bool LiquidLine::attach_function(uint8_t number, void (*function)(void))
   */
   bool call_function(uint8_t number) const;
+  
+  static void set_offset(uint8_t offset);
+  static uint8_t get_offset(void);
 
   uint8_t _row, _column, _focusRow, _focusColumn;
   Position _focusPosition;
@@ -530,7 +533,7 @@ private:
 
   @param *p_liquidCrystal - pointer to the DisplayClass object
   */
-  void print(DisplayClass *p_liquidCrystal) const;
+  void print(DisplayClass *p_liquidCrystal);
 
   /// Switches the focus
   /**
@@ -560,6 +563,7 @@ private:
   uint8_t _lineCount; ///< Count of the LiquidLine objects
   uint8_t _focus; ///< Number representing the focus position
   bool _hidden; ///< If hidden skips this screen when cycling
+  uint8_t _offset;
 };
 
 
