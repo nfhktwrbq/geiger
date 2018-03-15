@@ -10,9 +10,10 @@
 #define __SETTINGS_H__
 
 #include <avr/eeprom.h>
-#include "global.h"
 
-uint8_t settingsEE[SETTINGS_NUM + 1] EEMEM;
+
+
+
 
 class Settings
 {
@@ -20,10 +21,16 @@ class Settings
 public:
 	enum SETTING
 	{
-		LCD_LED_BRIGHT = 0,	
+		LCD_LED_BRIGHT = 0,
+		EXPO_TIME,	
+		EXPO_UNIT,
+		SEARCH_UNIT,
+		BUZZER,
+		SETTINGS_NUM,
 	};
 protected:
 private:
+	
 	static const uint8_t settingsDefault[SETTINGS_NUM];
 	
 	uint8_t settings[SETTINGS_NUM + 1];

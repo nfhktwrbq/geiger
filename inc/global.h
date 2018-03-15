@@ -14,8 +14,7 @@
 extern uint8_t spaceSymbol[8];
 extern Logger logger;
 
-#define DEFAULT_COUNTER_VOLTAGE 400
-#define SETTINGS_NUM 10
+#define DEFAULT_COUNTER_VOLTAGE 400;
 
 //Buttons
 #define LONG_PRESS_TIMEOUT 60000;

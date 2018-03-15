@@ -22,6 +22,7 @@
 #include "Counter.h"
 #include "Buttons.h"
 #include "Logger.h"
+#include "Settings.h"
 
 #define RENTGEN_KOEFF 1
 #define SIEVERT_KOEFF (RENTGEN_KOEFF / 100)
@@ -64,15 +65,29 @@ void buttonsProc(void);
 void proc(void);
 void changeExpoUnitType(void);
 void changeSearchUnitType(void);
+void switchBuzzer(void);
+void changeExpoTime(void);
+void resetExpoTime(void);
+void changeLedPWM(void);
+
+char unitSymbols[] = "NRSC";
 
 char gSearchString[STRING_LENGTH] = "";
 char gExpoString[STRING_LENGTH] = "PUSH ENTER";
 uint8_t gExpoState = EXPO_NONE;
-uint32_t gExpoTime = 10 * Counter::SECOND;
+
+uint8_t gExpoTimeSecond = 10;
+uint32_t gExpoTime = gExpoTimeSecond * Counter::SECOND;
 uint8_t gExpoUnitType = RENTGEN;
 uint8_t gSearchUnitType = SIEVERT;
+char gExpoUnitTypeSymbol = unitSymbols[gExpoUnitType];
+char gSearchUnitTypeSymbol = unitSymbols[gSearchUnitType];
+bool gBuzzer = true;
+uint8_t gLEDPWM;
 
 GPIO * pio = &GPIO::Instance();
+
+Settings settings;
 
 //MT10S lcd(pio, 16, 17, 18, 19, 23, 24);
 HD44780 lcd(pio, 16, 17, 18, 19, 23, 24);
@@ -94,45 +109,52 @@ HighSuply counterSupply(&pwmHV, &adc, AnalogToDigital::CH_3);
 Counter c(&counterSupply, &buzzer);
 
 Buttons buttons(pio, &c);
-//--------------work-screen-------------------	
 
+//--------------work-screen-------------------	
 LiquidLine searchLine(0, 0, gSearchString);
 LiquidLine expositionLine(0, 1, gExpoString);
+
 
 LiquidScreen workScreen(searchLine, expositionLine);
 
 
-//--------------settings-menu-------------------
-
-LiquidLine lcdLedLine(0, 0, "LCD");
-
-
- LiquidLine expoUnitLine(0, 1, "EUNIT:", gExpoUnitType);
-
-
- LiquidLine searchUnitLine(0, 2, "SUNIT:", gSearchUnitType);
-
-
-LiquidLine buzzerLine(0, 3, "BUZZER");
-
-
-LiquidLine backLine(0, 4, "BACK");
-
-
+//--------------settings-screen-------------------
+LiquidLine lcdLedLine(0, 0, "LED", gLEDPWM);
+LiquidLine expoUnitLine(0, 1, "EUNIT:", gExpoUnitTypeSymbol);
+LiquidLine searchUnitLine(0, 2, "SUNIT:", gSearchUnitTypeSymbol);
+LiquidLine buzzerLine(0, 3, "BUZZER:", gBuzzer);
+LiquidLine expoTimeLine(0, 4, "ET: ", gExpoTimeSecond, "s");
 
 LiquidScreen settingsScreen(lcdLedLine, expoUnitLine, searchUnitLine, buzzerLine);
 
-
-
 LiquidMenu menu(lcd, workScreen, settingsScreen);	
-
-
 	
 int main(void)
-{
-	settingsScreen.add_line(backLine);
+{	
 	logger.setLevel(Logger::DEBUG_3);
+	settings.init();
+	
+	gExpoTimeSecond = settings.get(Settings::EXPO_TIME);
+	gExpoUnitType = settings.get(Settings::EXPO_UNIT);
+	gSearchUnitType = settings.get(Settings::SEARCH_UNIT);
+	gBuzzer = (bool)settings.get(Settings::BUZZER);
+	gLEDPWM = settings.get(Settings::LCD_LED_BRIGHT);
+	gExpoUnitTypeSymbol = unitSymbols[gExpoUnitType];
+	gSearchUnitTypeSymbol = unitSymbols[gSearchUnitType];
+	
+	settingsScreen.add_line(expoTimeLine);
 
+	expositionLine.attach_function(1, expoExecute);
+	lcdLedLine.attach_function(1, changeLedPWM);
+	expoUnitLine.attach_function(1, changeExpoUnitType);
+	searchUnitLine.attach_function(1, changeSearchUnitType);
+	buzzerLine.attach_function(1, switchBuzzer);
+	expoTimeLine.attach_function(1, changeExpoTime);
+	expoTimeLine.attach_function(2, resetExpoTime);
+		
+	menu.set_focusPosition(Position::RIGHT);
+	menu.set_focusSymbol(Position::RIGHT, spaceSymbol);
+		
 	lcd.init();
 
 	timer8_0.setInterrupt(INT_OVERFLOW);
@@ -142,13 +164,8 @@ int main(void)
 	timer16_1.setInterrupt(INT_OVERFLOW);	
 	pwmHV.initPWM(CO_FAST_PWM_OCnA, WG_FAST_PWM_9BIT, CS_1PR);
 
-
-	pwmHV.setMaxPWMBorder(80);
-
-	
-    adc.setChannel(AnalogToDigital::CH_3);
-	
-	 
+	pwmHV.setMaxPWMBorder(80);	
+    adc.setChannel(AnalogToDigital::CH_3);	 
 	buzzer.enable(true);		
 	
 	// if(!counterSupply.setVoltage(400, 5, 250))
@@ -162,52 +179,67 @@ int main(void)
 	counter->init();
 
 
-    menu.set_focusPosition(Position::RIGHT);
- 	menu.set_focusSymbol(Position::RIGHT, spaceSymbol);	
 
- 	backLine.attach_function(1, f1);
-	expositionLine.attach_function(1, expoExecute);  
-
-	 expoUnitLine.attach_function(1, changeExpoUnitType);
-	 searchUnitLine.attach_function(1, changeSearchUnitType);
-
-
-    while (1) 
+    while(1) 
     {
 		proc();
     }
 }
 
-void qqq(void){
-	pwmLCDLED.changeOn(10);
-	lcd.clear();
-    	lcd.setCursor(0,0);
-		// lcd.printf("qqqqqqqq");
-}
-
-void f1(void)
-{
-		menu++;
-}
-
 void changeExpoUnitType(void)
 {
-	gExpoUnitType++;
+	gExpoUnitType++;	
 	if(gExpoUnitType > NUM_OF_TYPES)
 	{
 		gExpoUnitType = NONE;
 	}
+	gExpoUnitTypeSymbol = unitSymbols[gExpoUnitType];
+	settings.set(Settings::EXPO_UNIT, gExpoUnitType);
 }
 
 void changeSearchUnitType(void)
 {
 	gSearchUnitType++;
+	gSearchUnitTypeSymbol = unitSymbols[gSearchUnitType];
 	if(gSearchUnitType > NUM_OF_TYPES)
 	{
 		gSearchUnitType = NONE;
 	}
+	gSearchUnitTypeSymbol = unitSymbols[gSearchUnitType];
+	settings.set(Settings::SEARCH_UNIT, gSearchUnitType);
 }
 
+void changeExpoTime(void)
+{
+	gExpoTimeSecond += 10;
+	settings.set(Settings::EXPO_TIME, gExpoTimeSecond);
+}
+
+void resetExpoTime(void)
+{
+	gExpoTimeSecond = 0;
+	settings.set(Settings::EXPO_TIME, gExpoTimeSecond);
+}
+
+void changeLedPWM(void)
+{
+	gLEDPWM += 32;
+	settings.set(Settings::LCD_LED_BRIGHT, gLEDPWM);
+}
+
+void switchBuzzer(void)
+{
+	if(buzzer.isEnable())
+	{
+		buzzer.enable(false);
+		settings.set(Settings::BUZZER, false);
+	}
+	else
+	{
+		buzzer.enable(true);
+		settings.set(Settings::BUZZER, true);
+	}
+}
 
 void expoExecute(void)
 {
@@ -251,12 +283,13 @@ void buttonsProc(void)
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_LEFT))
 	{
-		 menu.previous_screen();
+		 menu.change_screen(workScreen);
+		 settings.save();
 		 logger.log(Logger::DEBUG_3, "Left lobg press\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_RIGHT))
 	{
-		 menu.next_screen();
+		 menu.change_screen(settingsScreen);
 		 logger.log(Logger::DEBUG_3, "Right long press\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_CENTER))

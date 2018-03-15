@@ -8,6 +8,8 @@
 
 #include "Settings.h"
 
+uint8_t settingsEE[Settings::SETTINGS_NUM + 1] EEMEM;
+
 const uint8_t Settings::settingsDefault[SETTINGS_NUM] =
 {
 	0x00, // 0
@@ -15,11 +17,6 @@ const uint8_t Settings::settingsDefault[SETTINGS_NUM] =
 	0x00, // 2
 	0x00, // 3
 	0x00, // 4
-	0x00, // 5
-	0x00, // 6
-	0x00, // 7
-	0x00, // 8
-	0x00  // 9
 };
 
 // default constructor
