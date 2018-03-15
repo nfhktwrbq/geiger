@@ -46,6 +46,7 @@ Include file for LiquidMenu library.
 
 #include "LiquidMenu_config.h"
 #include "LiquidMenu_debug.h"
+
 #include "global.h"
 
 #if I2C
@@ -68,6 +69,8 @@ const char LIQUIDMENU_VERSION[] = "1.3"; ///< The version of the library.
 /**
 Used to store the data type of `void*` so that they can be cast back later.
 */
+
+
 enum class DataType : uint8_t {
   NOT_USED = 0,
   BOOL = 1, BOOLEAN = 1,

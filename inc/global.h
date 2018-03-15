@@ -12,6 +12,16 @@
 #include "Logger.h"
 
 extern uint8_t spaceSymbol[8];
+
+extern uint8_t rightFocus[8];
+
+/// The focus glyph shown on the left.
+extern uint8_t leftFocus[8];
+
+/// The focus glyph shown when custom focus is set.
+extern uint8_t customFocus[8];
+
+
 extern Logger logger;
 
 #define DEFAULT_COUNTER_VOLTAGE 400;

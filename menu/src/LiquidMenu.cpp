@@ -26,9 +26,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
 #include "LiquidMenu.h"
-#include "glyphs.h"
+
 
 const uint8_t DIVISION_LINE_LENGTH = 40; ///< Sets the length of the division line.
 
@@ -36,9 +35,9 @@ LiquidMenu::LiquidMenu(DisplayClass &liquidCrystal, uint8_t startingScreen)
   : _p_liquidCrystal(&liquidCrystal), _screenCount(0),
     _currentScreen(startingScreen - 1) {
 #ifndef I2C
-  _p_liquidCrystal->createChar(15, glyph::rightFocus);
-  _p_liquidCrystal->createChar(14, glyph::leftFocus);
-  _p_liquidCrystal->createChar(13, glyph::customFocus);
+  _p_liquidCrystal->createChar(5, rightFocus);
+  _p_liquidCrystal->createChar(4, leftFocus);
+  _p_liquidCrystal->createChar(3, customFocus);
 #endif
 }
 
@@ -175,23 +174,21 @@ bool LiquidMenu::set_focusPosition(Position position) {
 bool LiquidMenu::set_focusSymbol(Position position, uint8_t symbol[8]) {
   switch (position) {
   case Position::RIGHT: {
-    _p_liquidCrystal->createChar(15, symbol);
+    _p_liquidCrystal->createChar(5, symbol);
     break;
   } //case RIGHT
   case Position::LEFT: {
-    _p_liquidCrystal->createChar(14, symbol);
+    _p_liquidCrystal->createChar(4, symbol);
     break;
   } //case LEFT
   case Position::CUSTOM: {
-    _p_liquidCrystal->createChar(13, symbol);
+    _p_liquidCrystal->createChar(3, symbol);
     break;
   } //case CUSTOM
   default: {
     return false;
   } //default
   } //switch (position)
-  for (uint8_t i = 0; i < 8; i++) {
-  }
   return true;
 }
 
@@ -212,7 +209,7 @@ void LiquidMenu::softUpdate() const {
 }
 
 void LiquidMenu::init() const {
-  _p_liquidCrystal->createChar(15, glyph::rightFocus);
-  _p_liquidCrystal->createChar(14, glyph::leftFocus);
-  _p_liquidCrystal->createChar(13, glyph::customFocus);
+  _p_liquidCrystal->createChar(5, rightFocus);
+  _p_liquidCrystal->createChar(4, leftFocus);
+  _p_liquidCrystal->createChar(3, customFocus);
 }

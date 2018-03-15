@@ -94,22 +94,22 @@ void LiquidLine::print(DisplayClass *p_liquidCrystal, bool isFocused, uint8_t of
 		if (isFocused) {
 			switch (_focusPosition) {
 			case Position::RIGHT: {
-				p_liquidCrystal->write((uint8_t)15);
+				p_liquidCrystal->write((uint8_t)5);
 				break;
 			} //case RIGHT
 			case Position::LEFT: {
 				p_liquidCrystal->setCursor(_column - 1, _row - offset);
-				p_liquidCrystal->write((uint8_t)14);
+				p_liquidCrystal->write((uint8_t)4);
 				break;
 			} //case LEFT
 			case Position::CUSTOM: {
 				p_liquidCrystal->setCursor(_focusColumn, _focusRow - offset);
-				p_liquidCrystal->write((uint8_t)13);
+				p_liquidCrystal->write((uint8_t)3);
 				break;
 			} //case CUSTOM
 			default: {
 				_focusPosition = Position::NORMAL;
-				p_liquidCrystal->write((uint8_t)15);
+				p_liquidCrystal->write((uint8_t)5);
 				break;
 			} //default
 			} //switch (_focusPosition)

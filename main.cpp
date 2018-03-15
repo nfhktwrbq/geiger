@@ -53,8 +53,6 @@ struct DosePower
 	char unit[STRING_LENGTH];
 };
 
-void qqq(void);
-void f1(void);
 void buttonTest(Buttons & buttons, Buzzer & buzzer);
 void expoExecute(void);
 void getDosePower(DosePower &dosePower, uint8_t unitType, uint32_t expoCounter, uint32_t expoTime);
@@ -141,6 +139,11 @@ int main(void)
 	logger.setLevel(Logger::DEBUG_3);
 	settings.init();
 	
+	pio->pinMode(11,GPIO::OUTPUT);
+	pio->writePin(11, GPIO::HIGH);
+	_delay_ms(2000);
+	pio->writePin(11, GPIO::HIGH);
+
 	gExpoTimeSecond = settings.get(Settings::EXPO_TIME);
 	gExpoUnitType = settings.get(Settings::EXPO_UNIT);
 	gSearchUnitType = settings.get(Settings::SEARCH_UNIT);
@@ -158,11 +161,11 @@ int main(void)
 	buzzerLine.attach_function(1, switchBuzzer);
 	expoTimeLine.attach_function(1, changeExpoTime);
 	expoTimeLine.attach_function(2, resetExpoTime);
-		
+	
+	lcd.init();
+
 	menu.set_focusPosition(Position::RIGHT);
 	menu.set_focusSymbol(Position::RIGHT, spaceSymbol);
-		
-	lcd.init();
 
 	timer8_0.setInterrupt(INT_OVERFLOW);
 	pwmLCDLED.initPWM(CO_FAST_PWM_OCnB, WG_FAST_PWM_1, CS_1PR);	
@@ -173,8 +176,9 @@ int main(void)
 
 	pwmHV.setMaxPWMBorder(80);	
     adc.setChannel(AnalogToDigital::CH_3);	 
-	buzzer.enable(true);		
 	
+	buzzer.enable(gBuzzer);		
+	pwmLCDLED.setPWM(gLEDPWM);
 	// if(!counterSupply.setVoltage(400, 5, 250))
 	// {
 	// 	lcd.setCursor(0,0);
@@ -184,8 +188,6 @@ int main(void)
 
 	counter = &c;
 	counter->init();
-
-
 
     while(1) 
     {
@@ -219,6 +221,7 @@ void changeSearchUnitType(void)
 void changeExpoTime(void)
 {
 	gExpoTimeSecond += 10;
+	gExpoTime = gExpoTimeSecond * Counter::SECOND;
 	settings.set(Settings::EXPO_TIME, gExpoTimeSecond);
 }
 
@@ -231,6 +234,7 @@ void resetExpoTime(void)
 void changeLedPWM(void)
 {
 	gLEDPWM += 32;
+	pwmLCDLED.setPWM(gLEDPWM);
 	settings.set(Settings::LCD_LED_BRIGHT, gLEDPWM);
 }
 
@@ -295,11 +299,13 @@ void buttonsProc(void)
 		 {
 			settings.save();	 
 		 }		 
+		 menu.set_focusSymbol(Position::RIGHT, spaceSymbol);
 		 logger.log(Logger::DEBUG_3, "Left lobg press\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_RIGHT))
 	{
 		 menu.change_screen(settingsScreen);
+		 menu.set_focusSymbol(Position::RIGHT, customFocus);
 		 logger.log(Logger::DEBUG_3, "Right long press\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_CENTER))
