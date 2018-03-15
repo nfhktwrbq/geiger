@@ -84,6 +84,7 @@ char gExpoUnitTypeSymbol = unitSymbols[gExpoUnitType];
 char gSearchUnitTypeSymbol = unitSymbols[gSearchUnitType];
 bool gBuzzer = true;
 uint8_t gLEDPWM;
+uint8_t gBatteryLevel;
 
 GPIO * pio = &GPIO::Instance();
 
@@ -126,6 +127,12 @@ LiquidLine buzzerLine(0, 3, "BUZZER:", gBuzzer);
 LiquidLine expoTimeLine(0, 4, "ET: ", gExpoTimeSecond, "s");
 
 LiquidScreen settingsScreen(lcdLedLine, expoUnitLine, searchUnitLine, buzzerLine);
+
+//-------------info-screen-------------------------
+LiquidLine headerInfoLine(0, 0, "COUNTER1.0");
+LiquidLine batteryLevelLine(0, 1, "BAT:", gBatteryLevel, "%");
+
+LiquidScreen infoScreen(batteryLevelLine);
 
 LiquidMenu menu(lcd, workScreen, settingsScreen);	
 	
@@ -284,7 +291,10 @@ void buttonsProc(void)
 	if(buttons.getButtonLongPress(Buttons::BUTTON_LEFT))
 	{
 		 menu.change_screen(workScreen);
-		 settings.save();
+		 if(settings.isEdit())
+		 {
+			settings.save();	 
+		 }		 
 		 logger.log(Logger::DEBUG_3, "Left lobg press\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_RIGHT))

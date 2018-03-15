@@ -22,6 +22,7 @@ const uint8_t Settings::settingsDefault[SETTINGS_NUM] =
 // default constructor
 Settings::Settings()
 {
+	_isEdit = false;
 } //Settings
 
 // default destructor
@@ -50,7 +51,11 @@ bool Settings::init(void)
 
 void Settings::set(SETTING setting, uint8_t value)
 {
-	settings[setting] = value;
+	if(settings[setting] != value)
+	{
+		settings[setting] = value;
+		_isEdit = true;
+	}
 }
 
 uint8_t Settings::get(SETTING setting)
@@ -65,6 +70,7 @@ void Settings::save(void)
 		eeprom_update_byte(&settingsEE[i], settings[i]);		
 	}
 	eeprom_update_byte(&settingsEE[SETTINGS_NUM], crc8(settings, SETTINGS_NUM));
+	_isEdit = false;
 }
 
 /*
@@ -91,4 +97,9 @@ uint8_t Settings::crc8(const uint8_t *pcBlock, uint16_t len)
     }
 
     return crc;
+}
+
+bool Settings::isEdit(void)
+{
+	return _isEdit;
 }

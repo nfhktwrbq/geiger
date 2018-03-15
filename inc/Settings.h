@@ -29,11 +29,10 @@ public:
 		SETTINGS_NUM,
 	};
 protected:
-private:
-	
-	static const uint8_t settingsDefault[SETTINGS_NUM];
-	
+private:	
+	static const uint8_t settingsDefault[SETTINGS_NUM];	
 	uint8_t settings[SETTINGS_NUM + 1];
+	bool _isEdit;
 //functions
 public:
 	Settings();
@@ -42,6 +41,7 @@ public:
 	void set(SETTING setting, uint8_t value);
 	uint8_t get(SETTING setting);
 	void save(void);
+	bool isEdit(void);
 protected:
 private:
 	Settings( const Settings &c );
