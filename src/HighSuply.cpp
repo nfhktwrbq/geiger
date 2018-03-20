@@ -13,7 +13,7 @@ HighSuply::HighSuply()
 {
 } //HighSuply
 
-HighSuply::HighSuply(PulseWidthModulation16 * pwm, AnalogToDigital * adc, uint8_t adcChannel) : adc(adc), pwm(pwm), adcChannel(adcChannel)
+HighSuply::HighSuply(PulseWidthModulation16 * pwm, AnalogToDigital * adc, AnalogToDigital::CHANNEL adcChannel) : adc(adc), pwm(pwm), adcChannel(adcChannel)
 {
 } //HighSuply
 
@@ -24,6 +24,7 @@ HighSuply::~HighSuply()
 
 uint16_t HighSuply::getVoltage()
 {
+	adc->setChannel(adcChannel);
 	return adc->proc() * VOLTAGE_NUMERATOR / VOLTAGE_DENOMINATOR;
 }
 

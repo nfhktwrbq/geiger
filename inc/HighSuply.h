@@ -21,7 +21,7 @@ private:
 	static const uint16_t MAX_HV = 450;
 	AnalogToDigital * adc;
 	PulseWidthModulation16 * pwm;
-	uint8_t adcChannel;
+	AnalogToDigital::CHANNEL adcChannel;
 	uint16_t targetVoltage;
 	uint16_t gate;
 	static const uint8_t VOLTAGE_NUMERATOR = 1;
@@ -31,7 +31,7 @@ private:
 //functions
 public:
 	HighSuply();
-	HighSuply(PulseWidthModulation16 * pwm, AnalogToDigital * adc, uint8_t adcChannel);
+	HighSuply(PulseWidthModulation16 * pwm, AnalogToDigital * adc, AnalogToDigital::CHANNEL adcChannel);
 	~HighSuply();
 	uint16_t getVoltage();
 	bool fastHsAdjust(void);

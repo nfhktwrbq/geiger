@@ -2,7 +2,6 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
-SHELL := cmd.exe
 RM := rm -rf
 
 USER_OBJS :=
@@ -162,7 +161,7 @@ CC = avr-g++
 OBJCOPY = avr-objcopy
 SIZE = avr-size
 MCU = atmega328p
-CFLAGS = -funsigned-char -funsigned-bitfields -DDEBUG -DF_CPU=16000000UL  -I./inc -I./menu/inc  -Os -fno-threadsafe-statics -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=$(MCU) -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.150\gcc\dev\atmega328p" -c -fno-threadsafe-statics -std=c++11  
+CFLAGS = -funsigned-char -funsigned-bitfields -DDEBUG -DF_CPU=16000000UL  -I./inc -I./menu/inc -I/usr/lib/avr/include/ -Os -fno-threadsafe-statics -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=$(MCU) -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.150\gcc\dev\atmega328p" -c -fno-threadsafe-statics -std=c++11  
 # AVR32/GNU C Compiler
 
 
@@ -199,21 +198,21 @@ CFLAGS = -funsigned-char -funsigned-bitfields -DDEBUG -DF_CPU=16000000UL  -I./in
 
 
 
-./%.o: .././%.cpp
+./%.o: ././%.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
 	$(CC) $(CFLAGS) -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o)   -o $@ $< 
 	@echo Finished building: $<
 	
 
-menu/src/%.o: ../menu/src/%.cpp
+menu/src/%.o: ./menu/src/%.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
 	$(CC) $(CFLAGS) -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o)   -o $@ $< 
 	@echo Finished building: $<
 	
 
-src/%.o: ../src/%.cpp
+src/%.o: ./src/%.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
 	$(CC) $(CFLAGS) -MD -MP -MF $(@:%.o=%.d) -MT$(@:%.o=%.d) -MT$(@:%.o=%.o)   -o $@ $< 

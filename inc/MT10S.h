@@ -19,14 +19,14 @@ class MT10S : public HD44780
 public:
 protected:
 private:
+	static const uint8_t LCD_STRING_LEN = 11;
 	uint8_t cursorPos;
-	uint8_t stringPos;
-	char lcdString[11];
 
 //functions
 public:
 	using HD44780::print;
 	virtual void print(char ch);
+	//virtual void clear();
 	/*void print(const char * str);
 	void printf(const char * format, ...);
 	void write(char ch);*/

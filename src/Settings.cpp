@@ -12,11 +12,11 @@ uint8_t settingsEE[Settings::SETTINGS_NUM + 1] EEMEM;
 
 const uint8_t Settings::settingsDefault[SETTINGS_NUM] =
 {
-	0x00, // 0
-	0x00, // 1
-	0x00, // 2
-	0x00, // 3
-	0x00, // 4
+	0x00, // 0 LCD_LED_BRIGHT
+	0x0a, // 1 EXPO_TIME	
+	0x00, // 2 EXPO_UNIT
+	0x01, // 3 SEARCH_UNIT
+	0x00, // 4 BUZZER
 };
 
 // default constructor

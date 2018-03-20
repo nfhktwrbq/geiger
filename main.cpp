@@ -67,6 +67,8 @@ void switchBuzzer(void);
 void changeExpoTime(void);
 void resetExpoTime(void);
 void changeLedPWM(void);
+void gotoInfo(void);
+void batLevelProc(void);
 
 char unitSymbols[] = "NRSC";
 
@@ -88,8 +90,8 @@ GPIO * pio = &GPIO::Instance();
 
 Settings settings;
 
-//MT10S lcd(pio, 16, 17, 18, 19, 23, 24);
-HD44780 lcd(pio, 16, 17, 18, 19, 23, 24);
+MT10S lcd(pio, 16, 17, 18, 19, 23, 24);
+//HD44780 lcd(pio, 16, 17, 18, 19, 23, 24);
 
 
 Timer8 timer8_0(&TCCR0A, &TCCR0B, &TCNT0, &OCR0A, &OCR0B, &TIMSK0, &TIFR0, &GTCCR, &GTCCR);	
@@ -123,6 +125,7 @@ LiquidLine expoUnitLine(0, 1, "EUNIT:", gExpoUnitTypeSymbol);
 LiquidLine searchUnitLine(0, 2, "SUNIT:", gSearchUnitTypeSymbol);
 LiquidLine buzzerLine(0, 3, "BUZZER:", gBuzzer);
 LiquidLine expoTimeLine(0, 4, "ET: ", gExpoTimeSecond, "s");
+LiquidLine infoLine(0, 5, "...INFO...");
 
 LiquidScreen settingsScreen(lcdLedLine, expoUnitLine, searchUnitLine, buzzerLine);
 
@@ -130,19 +133,18 @@ LiquidScreen settingsScreen(lcdLedLine, expoUnitLine, searchUnitLine, buzzerLine
 LiquidLine headerInfoLine(0, 0, "COUNTER1.0");
 LiquidLine batteryLevelLine(0, 1, "BAT:", gBatteryLevel, "%");
 
-LiquidScreen infoScreen(batteryLevelLine);
+LiquidScreen infoScreen(headerInfoLine, batteryLevelLine);
 
-LiquidMenu menu(lcd, workScreen, settingsScreen);	
+LiquidMenu menu(lcd, workScreen, settingsScreen, infoScreen);	
 	
 int main(void)
 {	
-	logger.setLevel(Logger::DEBUG_3);
+	//logger.setLevel(Logger::DEBUG_3);
 	settings.init();
 	
 	pio->pinMode(11,GPIO::OUTPUT);
-	pio->writePin(11, GPIO::HIGH);
-	_delay_ms(2000);
-	pio->writePin(11, GPIO::HIGH);
+	pio->pinMode(15,GPIO::OUTPUT);
+
 
 	gExpoTimeSecond = settings.get(Settings::EXPO_TIME);
 	gExpoUnitType = settings.get(Settings::EXPO_UNIT);
@@ -153,6 +155,7 @@ int main(void)
 	gSearchUnitTypeSymbol = unitSymbols[gSearchUnitType];
 	
 	settingsScreen.add_line(expoTimeLine);
+	settingsScreen.add_line(infoLine);
 
 	expositionLine.attach_function(1, expoExecute);
 	lcdLedLine.attach_function(1, changeLedPWM);
@@ -161,11 +164,10 @@ int main(void)
 	buzzerLine.attach_function(1, switchBuzzer);
 	expoTimeLine.attach_function(1, changeExpoTime);
 	expoTimeLine.attach_function(2, resetExpoTime);
+	infoLine.attach_function(1, gotoInfo);
 	
 	lcd.init();
 
-	menu.set_focusPosition(Position::RIGHT);
-	menu.set_focusSymbol(Position::RIGHT, spaceSymbol);
 
 	timer8_0.setInterrupt(INT_OVERFLOW);
 	pwmLCDLED.initPWM(CO_FAST_PWM_OCnB, WG_FAST_PWM_1, CS_1PR);	
@@ -189,6 +191,9 @@ int main(void)
 	counter = &c;
 	counter->init();
 
+	menu.set_focusPosition(Position::RIGHT);
+	menu.set_focusSymbol(Position::RIGHT, spaceSymbol);
+    
     while(1) 
     {
 		proc();
@@ -252,10 +257,29 @@ void switchBuzzer(void)
 	}
 }
 
+void gotoInfo(void)
+{
+	menu.change_screen(infoScreen);
+}
+
 void expoExecute(void)
 {
 	gExpoState = EXPO_START;
 	//logger.log(Logger::DEBUG_2, "Start expo\n");
+}
+
+void batLevelProc(void)
+{
+	static uint32_t timer = 0;
+	if(counter->getTimer() - timer > Counter::SECOND)
+	{
+		timer = counter->getTimer();
+	
+		adc.setChannel(AnalogToDigital::CH_2);
+		gBatteryLevel = (uint8_t)(adc.proc() / BAT_LEVEL_PERCENT_COEF);
+
+		adc.setChannel(AnalogToDigital::CH_3);
+	}
 }
 
 void proc(void)
@@ -264,6 +288,7 @@ void proc(void)
 	expoProc();
 	searchProc();
 	buttonsProc();
+	batLevelProc();
 	
  	if(counter->getTimer() - t > Counter::SECOND )
  	{

@@ -24,10 +24,11 @@ extern uint8_t customFocus[8];
 
 extern Logger logger;
 
-#define DEFAULT_COUNTER_VOLTAGE 400;
+#define DEFAULT_COUNTER_VOLTAGE 400
 
 //Buttons
-#define LONG_PRESS_TIMEOUT 60000;
+#define LONG_PRESS_TIMEOUT 60000
+#define BAT_LEVEL_PERCENT_COEF 8
 
 
 #endif /* GLOBAL_H_ */

@@ -7,6 +7,7 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 #include "MT10S.h"
 
 
@@ -20,7 +21,6 @@ MT10S::MT10S(GPIO * pio, uint8_t pinD4, uint8_t pinD5, uint8_t pinD6, uint8_t pi
 HD44780::HD44780(pio, pinD4, pinD5, pinD6, pinD7, pinRS, pinE)
 {
 	cursorPos = 0;
-	stringPos = 0;
 } //MT10S
 
 // default destructor
@@ -30,12 +30,7 @@ MT10S::~MT10S()
 
 void MT10S::print(char ch)
 {
-	if(lcdString[stringPos] != ch)
-	{
-		HD44780::print(ch);
-		lcdString[stringPos] = ch;
-	}	
-	stringPos++;
+	HD44780::print(ch);
 	if(cursorPos == 0x07)
 	{
 		cursorPos = 0x40;
@@ -44,9 +39,21 @@ void MT10S::print(char ch)
 	else
 	{
 		cursorPos++;
-	}		
+	}
 }
+
 /*
+void MT10S::clear()
+{
+	HD44780::clear();
+	memset(lcdString, 0x20, LCD_STRING_LEN - 1);
+	lcdString[LCD_STRING_LEN-1] = 0;
+	setCursor(0, 0);
+	for(uint8_t i = 0; i < 10; i++)
+	{
+		print(' ');
+	}
+}
 void MT10S::print(const char * str)
 {
 	while(* str)
@@ -82,6 +89,6 @@ void MT10S::setCursor(uint8_t col, uint8_t row)
 	{
 		cursorPos = col;
 	}
-	stringPos = col;
+	//stringPos = col;
 	HD44780::setCursor(cursorPos, 0);	
 }
