@@ -20,6 +20,8 @@ public:
 protected:
 private:
 	uint8_t cursorPos;
+	uint8_t stringPos;
+	char lcdString[11];
 
 //functions
 public:

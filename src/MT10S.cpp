@@ -20,6 +20,7 @@ MT10S::MT10S(GPIO * pio, uint8_t pinD4, uint8_t pinD5, uint8_t pinD6, uint8_t pi
 HD44780::HD44780(pio, pinD4, pinD5, pinD6, pinD7, pinRS, pinE)
 {
 	cursorPos = 0;
+	stringPos = 0;
 } //MT10S
 
 // default destructor
@@ -29,7 +30,12 @@ MT10S::~MT10S()
 
 void MT10S::print(char ch)
 {
-	HD44780::print(ch);
+	if(lcdString[stringPos] != ch)
+	{
+		HD44780::print(ch);
+		lcdString[stringPos] = ch;
+	}	
+	stringPos++;
 	if(cursorPos == 0x07)
 	{
 		cursorPos = 0x40;
@@ -68,6 +74,14 @@ void MT10S::printf(const char * format, ...)
 */
 void MT10S::setCursor(uint8_t col, uint8_t row)
 {
-	HD44780::setCursor(col, 0);
-	cursorPos = col;
+	if(col > 7)
+	{
+		cursorPos = (col % 8) + 0x40;
+	}
+	else
+	{
+		cursorPos = col;
+	}
+	stringPos = col;
+	HD44780::setCursor(cursorPos, 0);	
 }
