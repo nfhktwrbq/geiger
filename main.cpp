@@ -120,7 +120,7 @@ LiquidScreen workScreen(searchLine, expositionLine);
 
 
 //--------------settings-screen-------------------
-LiquidLine lcdLedLine(0, 0, "LED", gLEDPWM);
+LiquidLine lcdLedLine(0, 0, "LED", gLEDPWM, "    ");
 LiquidLine expoUnitLine(0, 1, "EUNIT:", gExpoUnitTypeSymbol);
 LiquidLine searchUnitLine(0, 2, "SUNIT:", gSearchUnitTypeSymbol);
 LiquidLine buzzerLine(0, 3, "BUZZER:", gBuzzer);
@@ -304,12 +304,12 @@ void buttonsProc(void)
 	buttons.proc();
 	if(buttons.getButtonClick(Buttons::BUTTON_LEFT))
 	{
-		menu.switch_focus(true);
+		menu.switch_focus(false);
 		logger.log(Logger::DEBUG_3, "Left click\n");
 	}
 	if(buttons.getButtonClick(Buttons::BUTTON_RIGHT))
 	{
-		 menu.switch_focus(false);
+		 menu.switch_focus(true);
 		 logger.log(Logger::DEBUG_3, "Right click\n");
 	}
 	if(buttons.getButtonClick(Buttons::BUTTON_CENTER))

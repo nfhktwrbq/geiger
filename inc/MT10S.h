@@ -26,11 +26,9 @@ private:
 public:
 	using HD44780::print;
 	virtual void print(char ch);
-	//virtual void clear();
-	/*void print(const char * str);
-	void printf(const char * format, ...);
-	void write(char ch);*/
 	virtual void setCursor(uint8_t col, uint8_t row);
+	virtual uint8_t getCursorPosition(void);
+	virtual uint8_t getSymbolsPerString(void);
 	MT10S();
 	MT10S(GPIO * pio, uint8_t pinD4, uint8_t pinD5, uint8_t pinD6, uint8_t pinD7, uint8_t pinRS, uint8_t pinE);
 	~MT10S();

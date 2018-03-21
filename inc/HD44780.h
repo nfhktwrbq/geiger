@@ -54,6 +54,8 @@ public:
 	virtual void createChar(uint8_t location, uint8_t * chArr);
 	virtual void clear();
 	virtual void home();
+	virtual uint8_t getCursorPosition(void);
+	virtual uint8_t getSymbolsPerString(void);
 
 protected:
 private:

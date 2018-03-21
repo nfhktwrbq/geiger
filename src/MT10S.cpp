@@ -92,3 +92,24 @@ void MT10S::setCursor(uint8_t col, uint8_t row)
 	//stringPos = col;
 	HD44780::setCursor(cursorPos, 0);	
 }
+
+uint8_t MT10S::getCursorPosition(void)
+{
+	if(cursorPos <= 7)
+	{
+		return cursorPos;
+	}
+	else
+	{
+		if(cursorPos >= 0x40)
+		{
+			return 8 + (cursorPos - 40);
+		}
+	}
+	return 0;
+}
+
+uint8_t MT10S::getSymbolsPerString(void)
+{
+	return 10;
+}

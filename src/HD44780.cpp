@@ -246,3 +246,13 @@ void HD44780::strobe(void)
 	pio->writePin(pinE, pio->LOW);
 	_delay_us(40);
 }
+
+uint8_t HD44780::getCursorPosition(void)
+{
+	return 0;
+}
+
+uint8_t HD44780::getSymbolsPerString(void)
+{
+	return 16;
+}
