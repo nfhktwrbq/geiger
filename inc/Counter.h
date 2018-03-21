@@ -25,7 +25,8 @@ class Counter
 		volatile uint32_t timer = 0;
 		volatile uint32_t counter = 0;
 		HighSuply * highSuply;
-		Buzzer * buzzer;		
+		Buzzer * buzzer;	
+		bool enableAdjust;	
 		//lcd.init();
 		
 	public:
@@ -34,6 +35,7 @@ class Counter
 		~Counter();
 		
 		void init(void);
+		bool initHighVoltage(void);
 		void proc(void);
 		uint32_t getCounter(void);
 		void setCounter(uint32_t);
@@ -41,6 +43,7 @@ class Counter
 		void setTimer(uint32_t);
 		uint32_t getCountSpeed(void);
 		void setBuzzer(Buzzer * buzzer);
+		void enableHighVoltageAdjust(bool en);
 	private:
 		
 		void procCounter(void);

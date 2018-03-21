@@ -29,6 +29,8 @@ extern Logger logger;
 //Buttons
 #define LONG_PRESS_TIMEOUT 60000
 #define BAT_LEVEL_PERCENT_COEF 8
+#define BAT_LEVEL_EMPTY_TRESHOLD 200
+#define BAT_LEVEL_FULL_TRESHOLD 1023
 
 
 #endif /* GLOBAL_H_ */

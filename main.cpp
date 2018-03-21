@@ -181,15 +181,16 @@ int main(void)
 	
 	buzzer.enable(gBuzzer);		
 	pwmLCDLED.setPWM(gLEDPWM);
-	// if(!counterSupply.setVoltage(400, 5, 250))
-	// {
-	// 	lcd.setCursor(0,0);
-	// 	lcd.printf("V=%d", counterSupply.getVoltage());
-	// 	while(1);
-	// }
 
 	counter = &c;
 	counter->init();
+	
+	if(!counter->initHighVoltage())
+	{
+		lcd.setCursor(0, 0);
+		lcd.print("HV_ERROR");
+		while(1);
+	}
 
 	menu.set_focusPosition(Position::RIGHT);
 	menu.set_focusSymbol(Position::RIGHT, spaceSymbol);
@@ -271,14 +272,44 @@ void expoExecute(void)
 void batLevelProc(void)
 {
 	static uint32_t timer = 0;
+	uint16_t adcResultFromBat;
 	if(counter->getTimer() - timer > Counter::SECOND)
 	{
 		timer = counter->getTimer();
 	
 		adc.setChannel(AnalogToDigital::CH_2);
-		gBatteryLevel = (uint8_t)(adc.proc() / BAT_LEVEL_PERCENT_COEF);
-
+		adcResultFromBat = adc.proc();
+		if(adcResultFromBat <= BAT_LEVEL_EMPTY_TRESHOLD)
+		{
+			gBatteryLevel = 0;
+			lcd.clear();
+			lcd.print("LOW BATTERY");
+			counter->enableHighVoltageAdjust(false);
+			pwmHV.setPWM(0);
+			while(1);
+			adc.setChannel(AnalogToDigital::CH_3);
+			return;
+		}
+		gBatteryLevel = (uint8_t)(100 * (adcResultFromBat - BAT_LEVEL_EMPTY_TRESHOLD)/(BAT_LEVEL_FULL_TRESHOLD - BAT_LEVEL_EMPTY_TRESHOLD));
+		if(gBatteryLevel > 100)
+		{
+			gBatteryLevel = 100;
+		}		
 		adc.setChannel(AnalogToDigital::CH_3);
+	}
+}
+
+void batLowLevelInfoShow(void)
+{
+	static uint32_t timer = 0;
+	if(counter->getTimer() - timer > Counter::SECOND * 10)
+	{
+		timer = counter->getTimer();
+		if(gBatteryLevel <= 10)
+		{
+			lcd.clear();
+			lcd.printf("%u OF BAT", gBatteryLevel);
+		}	
 	}
 }
 

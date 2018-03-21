@@ -6,12 +6,14 @@
 
 Counter::Counter()
 {
+	enableAdjust = true;
 }
 
 Counter::Counter(HighSuply * highSuply, Buzzer * buzzer) : highSuply(highSuply), buzzer(buzzer)
 {
 	highSuply->setTargetVoltage(400);
 	highSuply->setGate(5);
+	enableAdjust = true;
 }
 
 Counter::~Counter()
@@ -20,7 +22,16 @@ Counter::~Counter()
 
 void Counter::init(void)
 {
-	initExternalInterrupts();
+	initExternalInterrupts();	
+}
+
+bool Counter::initHighVoltage(void)
+{
+	if(!highSuply->setVoltage( highSuply->getTargetVoltage(), 5, 250 ) )
+	{
+		return false;
+	}	
+	return true;
 }
 
 uint32_t Counter::getCountSpeed(void)
@@ -31,7 +42,10 @@ uint32_t Counter::getCountSpeed(void)
 void Counter::proc(void)
 {
 	procCounter();
-	procHighSuply();
+	if(enableAdjust)
+	{
+		procHighSuply();	
+	}	
 }
 
 void Counter::procCounter(void)
@@ -90,6 +104,11 @@ void Counter::setTimer(uint32_t timer)
 void Counter::setBuzzer(Buzzer * buzzer)
 {
 	this->buzzer = buzzer;
+}
+
+void Counter::enableHighVoltageAdjust(bool en)
+{
+	this->enableAdjust = en;
 }
 
 void Counter::interruptHandlerINT0(void)
