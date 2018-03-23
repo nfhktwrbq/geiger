@@ -29,6 +29,7 @@ bool Counter::initHighVoltage(void)
 {
 	if(!highSuply->setVoltage( highSuply->getTargetVoltage(), 5, 250 ) )
 	{
+		enableHighVoltageAdjust(false);
 		return false;
 	}	
 	return true;
