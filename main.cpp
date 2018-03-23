@@ -119,7 +119,6 @@ LiquidLine expositionLine(0, 1, gExpoString);
 
 LiquidScreen workScreen(searchLine, expositionLine);
 
-
 //--------------settings-screen-------------------
 LiquidLine lcdLedLine(0, 0, "LED", gLEDPWM, "    ");
 LiquidLine expoUnitLine(0, 1, "EUNIT:", gExpoUnitTypeSymbol);
@@ -201,6 +200,10 @@ int main(void)
 	}
 	else
 	{
+		lcd.setCursor(0, 0);
+		lcd.print("NO BAT!");
+		_delay_ms(2000);
+		lcd.clear();
 		startWithoutBat = true;
 	}
     
