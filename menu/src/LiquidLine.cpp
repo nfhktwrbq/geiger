@@ -99,6 +99,11 @@ void LiquidLine::print(DisplayClass *p_liquidCrystal, bool isFocused, uint8_t of
 		}
 		if (isFocused) {
 			switch (_focusPosition) {
+			case Position::RIGHT_EDGE: {
+				p_liquidCrystal->setCursor(p_liquidCrystal->getSymbolsPerString(), _row - offset);
+				p_liquidCrystal->print((char)5);
+				break;
+			} //case RIGHT
 			case Position::RIGHT: {
 				p_liquidCrystal->print((char)5);
 				break;

@@ -84,7 +84,8 @@ char gExpoUnitTypeSymbol = unitSymbols[gExpoUnitType];
 char gSearchUnitTypeSymbol = unitSymbols[gSearchUnitType];
 bool gBuzzer = true;
 uint8_t gLEDPWM;
-uint8_t gBatteryLevel;
+uint8_t gBatteryLevel = 0;
+bool startWithoutBat = false;
 
 GPIO * pio = &GPIO::Instance();
 
@@ -185,15 +186,23 @@ int main(void)
 	counter = &c;
 	counter->init();
 	
-	if(!counter->initHighVoltage())
-	{
-		lcd.setCursor(0, 0);
-		lcd.print("HV_ERROR");
-		while(1);
-	}
+	menu.set_focusPosition(Position::RIGHT_EDGE);
+	menu.set_focusSymbol(Position::RIGHT_EDGE, spaceSymbol);
 
-	menu.set_focusPosition(Position::RIGHT);
-	menu.set_focusSymbol(Position::RIGHT, spaceSymbol);
+	batLevelProc();
+	if(gBatteryLevel > 0)
+	{
+		if(!counter->initHighVoltage())
+		{
+			lcd.setCursor(0, 0);
+			lcd.print("HV_ERROR");
+			while(1);
+		}	
+	}
+	else
+	{
+		startWithoutBat = true;
+	}
     
     while(1) 
     {
@@ -273,6 +282,10 @@ void batLevelProc(void)
 {
 	static uint32_t timer = 0;
 	uint16_t adcResultFromBat;
+	if(startWithoutBat)
+	{
+		return;
+	}
 	if(counter->getTimer() - timer > Counter::SECOND)
 	{
 		timer = counter->getTimer();
@@ -282,19 +295,26 @@ void batLevelProc(void)
 		if(adcResultFromBat <= BAT_LEVEL_EMPTY_TRESHOLD)
 		{
 			gBatteryLevel = 0;
-			lcd.clear();
-			lcd.print("LOW BATTERY");
 			counter->enableHighVoltageAdjust(false);
 			pwmHV.setPWM(0);
-			while(1);
 			adc.setChannel(AnalogToDigital::CH_3);
-			return;
+			lcd.setCursor(0, 0);
+			lcd.print("BAT LOW ER");
+			while(1);
 		}
 		gBatteryLevel = (uint8_t)(100 * (adcResultFromBat - BAT_LEVEL_EMPTY_TRESHOLD)/(BAT_LEVEL_FULL_TRESHOLD - BAT_LEVEL_EMPTY_TRESHOLD));
 		if(gBatteryLevel > 100)
 		{
 			gBatteryLevel = 100;
 		}		
+		if(gBatteryLevel < 10)
+		{
+			menu.set_focusSymbol(Position::RIGHT_EDGE, lowBatSymbol10);
+		}
+		if(gBatteryLevel < 5)
+		{
+			menu.set_focusSymbol(Position::RIGHT_EDGE, lowBatSymbol5);
+		}
 		adc.setChannel(AnalogToDigital::CH_3);
 	}
 }

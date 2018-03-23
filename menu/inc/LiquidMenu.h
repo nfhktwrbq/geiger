@@ -96,6 +96,7 @@ enum class Position : uint8_t {
   RIGHT = 1, NORMAL = 1,
   LEFT = 2,
   CUSTOM = 3,
+  RIGHT_EDGE,
 };
 
 /// @name recognizeType overloaded function

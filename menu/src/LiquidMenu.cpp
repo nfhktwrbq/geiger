@@ -173,6 +173,10 @@ bool LiquidMenu::set_focusPosition(Position position) {
 
 bool LiquidMenu::set_focusSymbol(Position position, uint8_t symbol[8]) {
   switch (position) {
+  case Position::RIGHT_EDGE: {
+    _p_liquidCrystal->createChar(5, symbol);
+    break;
+  } //case RIGHT
   case Position::RIGHT: {
     _p_liquidCrystal->createChar(5, symbol);
     break;

@@ -13,6 +13,10 @@
 
 extern uint8_t spaceSymbol[8];
 
+extern uint8_t lowBatSymbol10[8];
+
+extern uint8_t lowBatSymbol5[8];
+
 extern uint8_t rightFocus[8];
 
 /// The focus glyph shown on the left.
@@ -28,9 +32,8 @@ extern Logger logger;
 
 //Buttons
 #define LONG_PRESS_TIMEOUT 60000
-#define BAT_LEVEL_PERCENT_COEF 8
 #define BAT_LEVEL_EMPTY_TRESHOLD 200
-#define BAT_LEVEL_FULL_TRESHOLD 1023
+#define BAT_LEVEL_FULL_TRESHOLD 450
 
 
 #endif /* GLOBAL_H_ */
