@@ -16,7 +16,7 @@ const uint8_t Settings::settingsDefault[SETTINGS_NUM] =
 	0x0a, // 1 EXPO_TIME	
 	0x00, // 2 EXPO_UNIT
 	0x01, // 3 SEARCH_UNIT
-	0x00, // 4 BUZZER
+	'N', // 4 BUZZER
 };
 
 // default constructor

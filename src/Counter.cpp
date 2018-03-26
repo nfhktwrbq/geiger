@@ -2,6 +2,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "Counter.h"
+#include "global.h"
 
 
 Counter::Counter()
@@ -37,6 +38,7 @@ bool Counter::initHighVoltage(void)
 
 uint32_t Counter::getCountSpeed(void)
 {
+	logger.log(Logger::DEBUG_3, "Count speed = %lu\n", countSpeed);
 	return countSpeed;
 }
 

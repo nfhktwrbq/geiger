@@ -91,7 +91,7 @@ void LiquidScreen::print(DisplayClass *p_liquidCrystal){
 	{
 		_offset--;
 	}
-	logger.log(Logger::DEBUG_3, "Offset = %u, focus = %u\n", _offset, _focus);
+	//logger.log(Logger::DEBUG_3, "Offset = %u, focus = %u\n", _offset, _focus);
 
 	for (uint8_t l = 0; l < _lineCount; l++) {
 		bool focus = true;
@@ -99,7 +99,7 @@ void LiquidScreen::print(DisplayClass *p_liquidCrystal){
 			focus = false;
 		} else {
 		}
-		logger.log(Logger::DEBUG_3, "LiquidScreen print:\n");
+		//logger.log(Logger::DEBUG_3, "LiquidScreen print:\n");
 		_p_liquidLine[l]->print(p_liquidCrystal, focus, _offset);
 	}
 }
@@ -137,5 +137,5 @@ bool LiquidScreen::call_function(uint8_t number) const {
 void LiquidScreen::set_focus(uint8_t focus)
 {
 	_focus = focus;
-	logger.log(Logger::DEBUG_1, "LiquidScreen print:\n");
+	//logger.log(Logger::DEBUG_1, "LiquidScreen print:\n");
 }

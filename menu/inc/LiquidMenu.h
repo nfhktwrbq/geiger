@@ -94,9 +94,9 @@ Used to store and set the relative or absolute position of the focus indicator.
 */
 enum class Position : uint8_t {
   RIGHT = 1, NORMAL = 1,
-  LEFT = 2,
-  CUSTOM = 3,
-  RIGHT_EDGE,
+  LEFT = 2,  
+  RIGHT_EDGE = 3,
+  CUSTOM = 4,
 };
 
 /// @name recognizeType overloaded function

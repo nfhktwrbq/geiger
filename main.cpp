@@ -24,8 +24,8 @@
 #include "Logger.h"
 #include "Settings.h"
 
-#define RENTGEN_KOEFF 1
-#define SIEVERT_KOEFF (RENTGEN_KOEFF / 100)
+#define RENTGEN_KOEFF 10
+#define SIEVERT_KOEFF (RENTGEN_KOEFF * 10)
 
 #define STRING_LENGTH 11
 
@@ -68,7 +68,7 @@ void changeExpoTime(void);
 void resetExpoTime(void);
 void changeLedPWM(void);
 void gotoInfo(void);
-void batLevelProc(void);
+void batLevelProc(bool isInit = false);
 
 char unitSymbols[] = "NRSC";
 
@@ -82,7 +82,7 @@ uint8_t gExpoUnitType = RENTGEN;
 uint8_t gSearchUnitType = SIEVERT;
 char gExpoUnitTypeSymbol = unitSymbols[gExpoUnitType];
 char gSearchUnitTypeSymbol = unitSymbols[gSearchUnitType];
-bool gBuzzer = true;
+char gBuzzer = 'N';
 uint8_t gLEDPWM;
 uint8_t gBatteryLevel = 0;
 bool startWithoutBat = false;
@@ -139,7 +139,7 @@ LiquidMenu menu(lcd, workScreen, settingsScreen, infoScreen);
 	
 int main(void)
 {	
-	//logger.setLevel(Logger::DEBUG_3);
+	logger.setLevel(Logger::DEBUG_3);
 	settings.init();
 	
 	pio->pinMode(11,GPIO::OUTPUT);
@@ -149,7 +149,17 @@ int main(void)
 	gExpoTimeSecond = settings.get(Settings::EXPO_TIME);
 	gExpoUnitType = settings.get(Settings::EXPO_UNIT);
 	gSearchUnitType = settings.get(Settings::SEARCH_UNIT);
-	gBuzzer = (bool)settings.get(Settings::BUZZER);
+	gBuzzer = settings.get(Settings::BUZZER);
+	// if(gBuzzer == 'N')
+	// {
+	// 	buzzer.enable(false);
+	// 	logger.log(Logger::DEBUG_3,"BUZZER_N=%c",gBuzzer);
+	// }
+	// else
+	// {
+	// 	ogger.log(Logger::DEBUG_3,"BUZZER_Y=%c",gBuzzer);
+	// 	buzzer.enable(true);
+	// }
 	gLEDPWM = settings.get(Settings::LCD_LED_BRIGHT);
 	gExpoUnitTypeSymbol = unitSymbols[gExpoUnitType];
 	gSearchUnitTypeSymbol = unitSymbols[gSearchUnitType];
@@ -179,33 +189,43 @@ int main(void)
 	pwmHV.setMaxPWMBorder(80);	
     adc.setChannel(AnalogToDigital::CH_3);	 
 	
-	buzzer.enable(gBuzzer);		
+	buzzer.enable((gBuzzer == 'Y' ? true : false));		
 	pwmLCDLED.setPWM(gLEDPWM);
 
 	counter = &c;
 	counter->init();
-	
+
 	menu.set_focusPosition(Position::RIGHT_EDGE);
 	menu.set_focusSymbol(Position::RIGHT_EDGE, spaceSymbol);
+	menu.set_focusSymbol(Position::RIGHT, spaceSymbol);
+	menu.update();
 
-	batLevelProc();
-	if(gBatteryLevel > 0)
+	batLevelProc(true);
+	batLevelProc(true);
+	batLevelProc(true);
+	batLevelProc(true);
+	if(gBatteryLevel)
 	{
+		lcd.setCursor(0, 0);
+		lcd.printf("INIT...");
 		if(!counter->initHighVoltage())
 		{
 			lcd.setCursor(0, 0);
-			lcd.print("HV_ERROR");
+			lcd.printf("HV_ERROR");
 			while(1);
 		}	
 	}
 	else
 	{
 		lcd.setCursor(0, 0);
-		lcd.print("NO BAT!");
+		lcd.printf("NO BAT!");
 		_delay_ms(2000);
 		lcd.clear();
 		startWithoutBat = true;
 	}
+
+	menu.set_focusSymbol(Position::RIGHT_EDGE, spaceSymbol);
+	menu.update();
     
     while(1) 
     {
@@ -216,7 +236,7 @@ int main(void)
 void changeExpoUnitType(void)
 {
 	gExpoUnitType++;	
-	if(gExpoUnitType > NUM_OF_TYPES)
+	if(gExpoUnitType >= NUM_OF_TYPES)
 	{
 		gExpoUnitType = NONE;
 	}
@@ -228,7 +248,7 @@ void changeSearchUnitType(void)
 {
 	gSearchUnitType++;
 	gSearchUnitTypeSymbol = unitSymbols[gSearchUnitType];
-	if(gSearchUnitType > NUM_OF_TYPES)
+	if(gSearchUnitType >= NUM_OF_TYPES)
 	{
 		gSearchUnitType = NONE;
 	}
@@ -262,11 +282,13 @@ void switchBuzzer(void)
 	{
 		buzzer.enable(false);
 		settings.set(Settings::BUZZER, false);
+		gBuzzer = 'N';
 	}
 	else
 	{
 		buzzer.enable(true);
 		settings.set(Settings::BUZZER, true);
+		gBuzzer = 'Y';
 	}
 }
 
@@ -281,7 +303,7 @@ void expoExecute(void)
 	//logger.log(Logger::DEBUG_2, "Start expo\n");
 }
 
-void batLevelProc(void)
+void batLevelProc(bool isInit)
 {
 	static uint32_t timer = 0;
 	uint16_t adcResultFromBat;
@@ -289,21 +311,26 @@ void batLevelProc(void)
 	{
 		return;
 	}
-	if(counter->getTimer() - timer > Counter::SECOND)
+	if(counter->getTimer() - timer > Counter::SECOND || isInit)
 	{
 		timer = counter->getTimer();
 	
 		adc.setChannel(AnalogToDigital::CH_2);
 		adcResultFromBat = adc.proc();
+		//logger.log(Logger::DEBUG_3, "Result adc = %u", adcResultFromBat);
 		if(adcResultFromBat <= BAT_LEVEL_EMPTY_TRESHOLD)
 		{
 			gBatteryLevel = 0;
-			counter->enableHighVoltageAdjust(false);
-			pwmHV.setPWM(0);
 			adc.setChannel(AnalogToDigital::CH_3);
-			lcd.setCursor(0, 0);
-			lcd.print("BAT LOW ER");
-			while(1);
+			if(!isInit)
+			{
+				counter->enableHighVoltageAdjust(false);
+				pwmHV.setPWM(0);
+				lcd.setCursor(0, 0);
+				lcd.print("BAT LOW ER");
+				while(1);
+			}
+			return;
 		}
 		gBatteryLevel = (uint8_t)(100 * (adcResultFromBat - BAT_LEVEL_EMPTY_TRESHOLD)/(BAT_LEVEL_FULL_TRESHOLD - BAT_LEVEL_EMPTY_TRESHOLD));
 		if(gBatteryLevel > 100)
@@ -339,14 +366,15 @@ void batLowLevelInfoShow(void)
 void proc(void)
 {
 	static uint32_t t = 0;
-	expoProc();
-	searchProc();
+	counter->proc();
+	expoProc();	
 	buttonsProc();
 	batLevelProc();
 	
  	if(counter->getTimer() - t > Counter::SECOND )
  	{
  		t = counter->getTimer();
+ 		searchProc();
  		menu.update();    	
 		//logger.log(Logger::DEBUG_1, "UPDATE %s\n", gSearchString);
 		//logger.log(Logger::DEBUG_2, "Expo state = %u\n", gExpoState);
@@ -359,17 +387,17 @@ void buttonsProc(void)
 	if(buttons.getButtonClick(Buttons::BUTTON_LEFT))
 	{
 		menu.switch_focus(false);
-		logger.log(Logger::DEBUG_3, "Left click\n");
+		//logger.log(Logger::DEBUG_3, "Left click\n");
 	}
 	if(buttons.getButtonClick(Buttons::BUTTON_RIGHT))
 	{
 		 menu.switch_focus(true);
-		 logger.log(Logger::DEBUG_3, "Right click\n");
+		// logger.log(Logger::DEBUG_3, "Right click\n");
 	}
 	if(buttons.getButtonClick(Buttons::BUTTON_CENTER))
 	{
 		 menu.call_function(1);
-		 logger.log(Logger::DEBUG_3, "Center click\n");
+		 //logger.log(Logger::DEBUG_3, "Center click\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_LEFT))
 	{
@@ -378,19 +406,19 @@ void buttonsProc(void)
 		 {
 			settings.save();	 
 		 }		 
-		 menu.set_focusSymbol(Position::RIGHT, spaceSymbol);
-		 logger.log(Logger::DEBUG_3, "Left lobg press\n");
+		 menu.set_focusSymbol(Position::RIGHT_EDGE, spaceSymbol);
+		 //logger.log(Logger::DEBUG_3, "Left lobg press\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_RIGHT))
 	{
 		 menu.change_screen(settingsScreen);
-		 menu.set_focusSymbol(Position::RIGHT, customFocus);
-		 logger.log(Logger::DEBUG_3, "Right long press\n");
+		 menu.set_focusSymbol(Position::RIGHT_EDGE, customFocus);
+		// logger.log(Logger::DEBUG_3, "Right long press\n");
 	}
 	if(buttons.getButtonLongPress(Buttons::BUTTON_CENTER))
 	{
 		 menu.call_function(2);
-		 logger.log(Logger::DEBUG_3, "Center long press\n");
+		 //logger.log(Logger::DEBUG_3, "Center long press\n");
 	}
 }
 
@@ -399,7 +427,7 @@ void searchProc(void)
 	DosePower dosePower;
 	getDosePower(dosePower, gSearchUnitType, counter->getCountSpeed(), Counter::SECOND);
 	memset(gSearchString, 0, STRING_LENGTH);
-	sprintf(gSearchString,"%5lu", dosePower.value);
+	sprintf(gSearchString,"%4lu", dosePower.value);
 	strcat(gSearchString, dosePower.unit);
 }
 
@@ -415,7 +443,7 @@ void expoProc(void)
 		case EXPO_NONE:
 			getDosePower(dosePower, gExpoUnitType, expoCounter, gExpoTime);
 			memset(gExpoString, 0, STRING_LENGTH);
-			sprintf(gExpoString,"%5lu", dosePower.value);
+			sprintf(gExpoString,"%4lu", dosePower.value);
 			strcat(gExpoString, dosePower.unit);		
 		break;
 		case EXPO_START:
@@ -433,13 +461,14 @@ void expoProc(void)
 			if(counter->getTimer() - expoTimer > timeGap * i)
 			{
 				strncat(gExpoString, "*", STRING_LENGTH - strlen(gExpoString));
-				logger.log(Logger::DEBUG_2, "expo proc %u\n", i);
+				//logger.log(Logger::DEBUG_2, "expo proc %u\n", i);
 				i++;			
 			}
 			if(i > (STRING_LENGTH))
 			{
 				expoCounter = counter->getCounter() - expoCounter;
 				gExpoState = EXPO_NONE;
+				menu.update();
 				//logger.log(Logger::DEBUG_2, "expo complete!\n");		
 			}
 		break;
@@ -448,8 +477,9 @@ void expoProc(void)
 
 void getDosePower(DosePower &dosePower, uint8_t unitType, uint32_t expoCounter, uint32_t expoTime)
 {
-	uint32_t dp = expoCounter * Counter::SECOND / expoTime;
+	uint32_t dp = (expoCounter * Counter::SECOND) / expoTime;
 	uint8_t index = 0;
+	uint8_t rank;
 	memset(dosePower.unit, 0, STRING_LENGTH);
 	strcpy(dosePower.unit, "   /h");
 	switch(unitType)
@@ -461,7 +491,7 @@ void getDosePower(DosePower &dosePower, uint8_t unitType, uint32_t expoCounter, 
 		break;
 		case SIEVERT:
 			dosePower.unit[2] = 'S';
-			dp = (uint32_t)(dp * 1000 * SIEVERT_KOEFF);
+			dp *=  SIEVERT_KOEFF;
 		break;
 		case COUNTS:
 			dosePower.unit[2] = 'C';
@@ -470,16 +500,25 @@ void getDosePower(DosePower &dosePower, uint8_t unitType, uint32_t expoCounter, 
 		case NONE:
 			memset(dosePower.unit, 0, STRING_LENGTH);
 			sprintf(dosePower.unit, "/%u", (uint16_t)(expoTime / Counter::SECOND) );
-			dosePower.value = expoCounter;
+			dosePower.value = dp;
 			return;
 		break;
 	}		
-	index += getMetricPrefixIndex(dp);
+	rank = getMetricPrefixIndex(dp);
+	index += rank;
 	if(unitType != COUNTS)
 	{
 		dosePower.unit[1] = metricPrefix[index];
 	}
+
+	for(uint8_t i = 0; i < rank; i++)
+	{
+		dp /= 1000;
+		logger.log(Logger::DEBUG_3, "Enter\n");
+
+	}
 	dosePower.value = dp;	
+	logger.log(Logger::DEBUG_3, "Dose = %lu\n", dp);
 }
 
 uint8_t getMetricPrefixIndex(uint32_t val)

@@ -92,7 +92,7 @@ void LiquidLine::print(DisplayClass *p_liquidCrystal, bool isFocused, uint8_t of
 			p_liquidCrystal->print(' ');
 		}
 		//p_liquidCrystal->setCursor(_column, _row - offset);
-		logger.log(Logger::DEBUG_3, "rows = %u\n", _row + offset);
+		//logger.log(Logger::DEBUG_3, "rows = %u\n", _row + offset);
 
 		for (uint8_t v = 0; v < MAX_VARIABLES; v++) {
 			print_variable(p_liquidCrystal, v);
@@ -100,7 +100,7 @@ void LiquidLine::print(DisplayClass *p_liquidCrystal, bool isFocused, uint8_t of
 		if (isFocused) {
 			switch (_focusPosition) {
 			case Position::RIGHT_EDGE: {
-				p_liquidCrystal->setCursor(p_liquidCrystal->getSymbolsPerString(), _row - offset);
+				p_liquidCrystal->setCursor(p_liquidCrystal->getSymbolsPerString() - 1, _row - offset);
 				p_liquidCrystal->print((char)5);
 				break;
 			} //case RIGHT
@@ -194,7 +194,7 @@ void LiquidLine::print_variable(DisplayClass *p_liquidCrystal, uint8_t number) {
 	case DataType::UINT32_T: {
 		const uint32_t variable = *static_cast<const uint32_t*>(_variable[number]);
 		p_liquidCrystal->print(variable);
-		logger.log(Logger::DEBUG_1, "print_variable(uint32_t): %lu\n", variable);
+		//logger.log(Logger::DEBUG_1, "print_variable(uint32_t): %lu\n", variable);
 		break;
 	} //case UINT32_T
 
