@@ -69,6 +69,7 @@ void resetExpoTime(void);
 void changeLedPWM(void);
 void gotoInfo(void);
 void batLevelProc(bool isInit = false);
+uint32_t getAverage(uint32_t val, bool reset);
 
 char unitSymbols[] = "NRSC";
 
@@ -120,7 +121,7 @@ LiquidLine expositionLine(0, 1, gExpoString);
 LiquidScreen workScreen(searchLine, expositionLine);
 
 //--------------settings-screen-------------------
-LiquidLine lcdLedLine(0, 0, "LED", gLEDPWM, "    ");
+LiquidLine lcdLedLine(0, 0, "LED:", gLEDPWM, "    ");
 LiquidLine expoUnitLine(0, 1, "EUNIT:", gExpoUnitTypeSymbol);
 LiquidLine searchUnitLine(0, 2, "SUNIT:", gSearchUnitTypeSymbol);
 LiquidLine buzzerLine(0, 3, "BUZZER:", gBuzzer);
@@ -130,7 +131,7 @@ LiquidLine infoLine(0, 5, "...INFO...");
 LiquidScreen settingsScreen(lcdLedLine, expoUnitLine, searchUnitLine, buzzerLine);
 
 //-------------info-screen-------------------------
-LiquidLine headerInfoLine(0, 0, "COUNTER1.0");
+LiquidLine headerInfoLine(0, 0, "BLD 1.0");
 LiquidLine batteryLevelLine(0, 1, "BAT:", gBatteryLevel, "%");
 
 LiquidScreen infoScreen(headerInfoLine, batteryLevelLine);
@@ -222,6 +223,7 @@ int main(void)
 		_delay_ms(2000);
 		lcd.clear();
 		startWithoutBat = true;
+		counter->enableHighVoltageAdjust(false);
 	}
 
 	menu.set_focusSymbol(Position::RIGHT_EDGE, spaceSymbol);
@@ -271,7 +273,18 @@ void resetExpoTime(void)
 
 void changeLedPWM(void)
 {
-	gLEDPWM += 32;
+	switch(gLEDPWM)
+	{
+		case 224:
+		gLEDPWM = 255;
+		break;
+		case 255:
+		gLEDPWM = 0;
+		break;
+		default:
+		gLEDPWM += 32;	
+	}
+	
 	pwmLCDLED.setPWM(gLEDPWM);
 	settings.set(Settings::LCD_LED_BRIGHT, gLEDPWM);
 }
@@ -424,11 +437,54 @@ void buttonsProc(void)
 
 void searchProc(void)
 {
+	static DosePower sDosePower;
 	DosePower dosePower;
 	getDosePower(dosePower, gSearchUnitType, counter->getCountSpeed(), Counter::SECOND);
+	if(strcmp(dosePower.unit,dosePower.unit))
+	{
+		dosePower.value = getAverage(dosePower.value, true);		
+	}
+	else
+	{
+		dosePower.value = getAverage(dosePower.value, false);
+	}
+	memcpy(&sDosePower, &dosePower, sizeof(DosePower));
 	memset(gSearchString, 0, STRING_LENGTH);
 	sprintf(gSearchString,"%4lu", dosePower.value);
 	strcat(gSearchString, dosePower.unit);
+}
+
+uint32_t getAverage(uint32_t val, bool reset)
+{
+	static uint32_t vals[3];
+    static uint8_t index = 0;
+    static uint8_t fill = 0;
+    static uint32_t average = 0;
+    if(reset)
+    {
+        index = 0;
+        fill = 0;
+        average = 0;
+        memset(vals, 0, sizeof(vals));
+    }
+    if(fill)
+    {
+        average -= vals[index];
+
+    }
+    vals[index] = val;
+    average += val;
+    index++;
+    if(index > 2)
+    {
+        index = 0;
+        fill = 3;
+    }
+    if(fill)
+    {
+        return average / fill;
+    }
+    return average / index;
 }
 
 void expoProc(void)

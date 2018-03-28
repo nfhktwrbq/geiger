@@ -7,14 +7,14 @@
 
 Counter::Counter()
 {
-	enableAdjust = true;
+	//enableAdjust = true;
 }
 
 Counter::Counter(HighSuply * highSuply, Buzzer * buzzer) : highSuply(highSuply), buzzer(buzzer)
 {
 	highSuply->setTargetVoltage(400);
 	highSuply->setGate(5);
-	enableAdjust = true;
+	//enableAdjust = true;
 }
 
 Counter::~Counter()
@@ -33,12 +33,13 @@ bool Counter::initHighVoltage(void)
 		enableHighVoltageAdjust(false);
 		return false;
 	}	
+	enableHighVoltageAdjust(true);
 	return true;
 }
 
 uint32_t Counter::getCountSpeed(void)
 {
-	logger.log(Logger::DEBUG_3, "Count speed = %lu\n", countSpeed);
+	//logger.log(Logger::DEBUG_3, "Count speed = %lu\n", countSpeed);
 	return countSpeed;
 }
 
@@ -71,7 +72,8 @@ void Counter::procHighSuply(void)
 	if (timer - sTimer > HIGH_SUPLY_ADJUST_PERIOD)
 	{
 		sTimer = timer;
-		highSuply->fastHsAdjust();		
+		highSuply->fastHsAdjust();	
+		logger.log(Logger::DEBUG_3, "FA=%u\n", highSuply->getVoltage());	
 	} 
 }
 
