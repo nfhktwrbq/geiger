@@ -294,13 +294,13 @@ void switchBuzzer(void)
 	if(buzzer.isEnable())
 	{
 		buzzer.enable(false);
-		settings.set(Settings::BUZZER, false);
+		settings.set(Settings::BUZZER, 'N');
 		gBuzzer = 'N';
 	}
 	else
 	{
 		buzzer.enable(true);
-		settings.set(Settings::BUZZER, true);
+		settings.set(Settings::BUZZER, 'Y');
 		gBuzzer = 'Y';
 	}
 }
@@ -456,7 +456,7 @@ void searchProc(void)
 
 uint32_t getAverage(uint32_t val, bool reset)
 {
-	static uint32_t vals[3];
+	static uint32_t vals[3] = {0,0,0};
     static uint8_t index = 0;
     static uint8_t fill = 0;
     static uint32_t average = 0;
