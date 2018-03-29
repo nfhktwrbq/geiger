@@ -35,6 +35,7 @@ public:
 	~HighSuply();
 	uint16_t getVoltage();
 	bool fastHsAdjust(void);
+	void boundWatcher(void);
 	bool setVoltage(uint16_t HV, uint16_t gate, uint16_t delay);
 	void setTargetVoltage(uint16_t val);
 	uint16_t getTargetVoltage(void);

@@ -22,6 +22,7 @@ class Counter
 	private:
 		uint32_t countSpeed;
 		static const uint32_t HIGH_SUPLY_ADJUST_PERIOD = SECOND * 5;
+		static const uint32_t HIGH_SUPLY_WATCHER_PERIOD = SECOND / 10;	
 		volatile uint32_t timer = 0;
 		volatile uint32_t counter = 0;
 		HighSuply * highSuply;

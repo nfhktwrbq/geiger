@@ -45,11 +45,13 @@ enum EXPO_STATE
 	EXPO_NONE,
 	EXPO_START,
 	EXPO_EXEC,
+	EXPO_END,
 };
 
 struct DosePower
 {
 	uint32_t value;
+	double valueD;
 	char unit[STRING_LENGTH];
 };
 
@@ -151,16 +153,6 @@ int main(void)
 	gExpoUnitType = settings.get(Settings::EXPO_UNIT);
 	gSearchUnitType = settings.get(Settings::SEARCH_UNIT);
 	gBuzzer = settings.get(Settings::BUZZER);
-	// if(gBuzzer == 'N')
-	// {
-	// 	buzzer.enable(false);
-	// 	logger.log(Logger::DEBUG_3,"BUZZER_N=%c",gBuzzer);
-	// }
-	// else
-	// {
-	// 	ogger.log(Logger::DEBUG_3,"BUZZER_Y=%c",gBuzzer);
-	// 	buzzer.enable(true);
-	// }
 	gLEDPWM = settings.get(Settings::LCD_LED_BRIGHT);
 	gExpoUnitTypeSymbol = unitSymbols[gExpoUnitType];
 	gSearchUnitTypeSymbol = unitSymbols[gSearchUnitType];
@@ -187,7 +179,7 @@ int main(void)
 	timer16_1.setInterrupt(INT_OVERFLOW);	
 	pwmHV.initPWM(CO_FAST_PWM_OCnA, WG_FAST_PWM_9BIT, CS_1PR);
 
-	pwmHV.setMaxPWMBorder(80);	
+	pwmHV.setMaxPWMBorder(255);	
     adc.setChannel(AnalogToDigital::CH_3);	 
 	
 	buzzer.enable((gBuzzer == 'Y' ? true : false));		
@@ -450,7 +442,7 @@ void searchProc(void)
 	}
 	memcpy(&sDosePower, &dosePower, sizeof(DosePower));
 	memset(gSearchString, 0, STRING_LENGTH);
-	sprintf(gSearchString,"%4lu", dosePower.value);
+	sprintf(gSearchString,"%4lu ", dosePower.value);
 	strcat(gSearchString, dosePower.unit);
 }
 
@@ -497,10 +489,7 @@ void expoProc(void)
 	switch(gExpoState)
 	{
 		case EXPO_NONE:
-			getDosePower(dosePower, gExpoUnitType, expoCounter, gExpoTime);
-			memset(gExpoString, 0, STRING_LENGTH);
-			sprintf(gExpoString,"%4lu", dosePower.value);
-			strcat(gExpoString, dosePower.unit);		
+					
 		break;
 		case EXPO_START:
 			expoTimer = counter->getTimer();
@@ -522,11 +511,26 @@ void expoProc(void)
 			}
 			if(i > (STRING_LENGTH))
 			{
-				expoCounter = counter->getCounter() - expoCounter;
-				gExpoState = EXPO_NONE;
-				menu.update();
+				expoCounter = counter->getCounter() - expoCounter;				
+				gExpoState = EXPO_END;
 				//logger.log(Logger::DEBUG_2, "expo complete!\n");		
+			} 
+		case EXPO_END:
+			getDosePower(dosePower, gExpoUnitType, expoCounter, gExpoTime);
+			memset(gExpoString, 0, STRING_LENGTH);
+			if(gExpoUnitType != EXPO_NONE)
+			{
+				sprintf(gExpoString,"%3.1lf", dosePower.valueD);	
 			}
+			else
+			{
+				sprintf(gExpoString,"%4lu ", dosePower.value);
+			}
+			
+			strcat(gExpoString, dosePower.unit);
+			menu.update();
+			gExpoState = EXPO_NONE;
+		break;	
 		break;
 	}
 }
@@ -534,29 +538,30 @@ void expoProc(void)
 void getDosePower(DosePower &dosePower, uint8_t unitType, uint32_t expoCounter, uint32_t expoTime)
 {
 	uint32_t dp = (expoCounter * Counter::SECOND) / expoTime;
+	double dpD = (expoCounter * Counter::SECOND) / (double)expoTime;
 	uint8_t index = 0;
 	uint8_t rank;
 	memset(dosePower.unit, 0, STRING_LENGTH);
-	strcpy(dosePower.unit, "   /h");
+	strcpy(dosePower.unit, "  /h");
 	switch(unitType)
 	{
 		case RENTGEN:
-			dosePower.unit[2] = 'R';
+			dosePower.unit[1] = 'R';
 			index = 1;
 			dp = (uint32_t)(dp * RENTGEN_KOEFF);
 		break;
 		case SIEVERT:
-			dosePower.unit[2] = 'S';
+			dosePower.unit[1] = 'S';
 			dp *=  SIEVERT_KOEFF;
 		break;
 		case COUNTS:
-			dosePower.unit[2] = 'C';
-			dosePower.unit[4] = 's';
+			dosePower.unit[1] = 'C';
+			dosePower.unit[3] = 's';
 		break;
 		case NONE:
 			memset(dosePower.unit, 0, STRING_LENGTH);
 			sprintf(dosePower.unit, "/%u", (uint16_t)(expoTime / Counter::SECOND) );
-			dosePower.value = dp;
+			dosePower.value = expoCounter;
 			return;
 		break;
 	}		
@@ -570,10 +575,12 @@ void getDosePower(DosePower &dosePower, uint8_t unitType, uint32_t expoCounter, 
 	for(uint8_t i = 0; i < rank; i++)
 	{
 		dp /= 1000;
-		logger.log(Logger::DEBUG_3, "Enter\n");
+		dpD /= 1000;
+		//logger.log(Logger::DEBUG_3, "Enter\n");
 
 	}
-	dosePower.value = dp;	
+	dosePower.value = dp;
+	dosePower.value = dpD;	
 	logger.log(Logger::DEBUG_3, "Dose = %lu\n", dp);
 }
 

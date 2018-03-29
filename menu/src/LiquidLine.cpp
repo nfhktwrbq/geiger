@@ -97,6 +97,12 @@ void LiquidLine::print(DisplayClass *p_liquidCrystal, bool isFocused, uint8_t of
 		for (uint8_t v = 0; v < MAX_VARIABLES; v++) {
 			print_variable(p_liquidCrystal, v);
 		}
+		cursorPos = p_liquidCrystal->getCursorPosition();
+		symbolsPerString = p_liquidCrystal->getSymbolsPerString();
+		for(uint8_t i = cursorPos; i < symbolsPerString; i++)
+		{
+			p_liquidCrystal->print(' ');
+		}
 		if (isFocused) {
 			switch (_focusPosition) {
 			case Position::RIGHT_EDGE: {
@@ -126,12 +132,6 @@ void LiquidLine::print(DisplayClass *p_liquidCrystal, bool isFocused, uint8_t of
 			} //switch (_focusPosition)
 		} else {
 			//p_liquidCrystal->print(NOTHING);
-		}
-		cursorPos = p_liquidCrystal->getCursorPosition();
-		symbolsPerString = p_liquidCrystal->getSymbolsPerString();
-		for(uint8_t i = cursorPos; i < symbolsPerString; i++)
-		{
-			p_liquidCrystal->print(' ');
 		}
 	}
 }

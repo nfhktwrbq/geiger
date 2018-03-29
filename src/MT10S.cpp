@@ -83,7 +83,7 @@ void MT10S::setCursor(uint8_t col, uint8_t row)
 {
 	if(col > 7)
 	{
-		cursorPos = (col % 8) + 0x40;
+		cursorPos = (col - 8) + 0x40;
 	}
 	else
 	{
