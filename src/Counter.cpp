@@ -67,7 +67,8 @@ void Counter::procCounter(void)
 
 void Counter::procHighSuply(void)
 {
-	static uint32_t sTimer = 0; 	
+	static uint32_t sTimer = 0;
+	static uint32_t sWatcheTimer = 0; 	
 
 	if (timer - sTimer > HIGH_SUPLY_ADJUST_PERIOD)
 	{
@@ -75,6 +76,11 @@ void Counter::procHighSuply(void)
 		highSuply->fastHsAdjust();	
 		logger.log(Logger::DEBUG_3, "FA=%u\n", highSuply->getVoltage());	
 	} 
+	if (timer - sWatcheTimer > HIGH_SUPLY_WATCHER_PERIOD)
+	{
+		sWatcheTimer = timer;
+		highSuply->boundWatcher();
+	}
 }
 
 void Counter::initExternalInterrupts()

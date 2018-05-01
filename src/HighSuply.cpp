@@ -44,6 +44,14 @@ bool HighSuply::fastHsAdjust(void)
 	return true;	
 }
 
+void HighSuply::boundWatcher(void)
+{
+	if((getVoltage() > (MAX_HV + gate)) && pwm->getPWM() > 0)
+	{
+		pwm->changeOn(-1);
+	}	
+}
+
 bool  HighSuply::setVoltage(uint16_t HV, uint16_t gate, uint16_t delay)
 {
 	uint16_t new_HV = 0;
