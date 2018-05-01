@@ -103,7 +103,7 @@ uint8_t MT10S::getCursorPosition(void)
 	{
 		if(cursorPos >= 0x40)
 		{
-			return 8 + (cursorPos - 40);
+			return 8 + (cursorPos - 0x40);
 		}
 	}
 	return 0;
